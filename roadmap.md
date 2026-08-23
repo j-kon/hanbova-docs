@@ -9,13 +9,15 @@
 | **Milestone 2.5** | Consumer Wallet Experience & Centralized Design System | `COMPLETED` ✅ |
 | **Milestone 3A** | Real Two-Device Cashu Test Wallet + Secure Encrypted Delivery | `COMPLETED` ✅ |
 | **Milestone 3B** | Lightning Integration & Ecash Swaps (NUT-04/NUT-05) | `COMPLETED` ✅ |
-| **Milestone 4** | Production Hardening, Multi-Mint Routing & App Store Readiness | `PLANNED` 📋 |
+| **Milestone 4** | Production Hardening, BIP-39 Backup, Biometrics & Multi-Mint | `COMPLETED` ✅ |
+| **Milestone 5** | Public Mainnet Beta, On-Chain Swaps & App Store Publishing | `PLANNED` 📋 |
 
 ---
 
-## Milestone 3B Completed Highlights
-- Created `CashuLightningBridge` for Cashu NUT-04 (Mint via Lightning) and NUT-05 (Melt via Lightning).
-- Exposed `/api/v1/lightning/invoice`, `/api/v1/lightning/pay`, `/api/v1/lightning/mint-quote`, `/api/v1/lightning/melt-quote`.
-- Implemented `LightningService` in `hanbova-app` for invoice generation, payments, and quotes.
-- Integrated `SendScreen` and `ReceiveScreen` with dynamic Lightning invoice creation and fee parsing.
-- Added comprehensive unit and integration tests across both Rust backend (23 tests) and Flutter client (27 tests).
+## Milestone 4 Completed Highlights
+- Complete 2048-word BIP-39 English dictionary and `MnemonicService` for 12-word seed phrase generation, validation, and autocomplete.
+- Interactive `BackupSeedScreen` with tap-to-reveal, screenshot security warnings, and 3-word verification quiz.
+- `RestoreSeedScreen` with 12-word entry, live autocomplete suggestions, and checksum verification.
+- `BiometricService` wrapping platform Face ID, Touch ID, and hardware key security.
+- `MintsScreen` for multi-mint management, active mint switching, and live NUT-11 capability probe validation.
+- All test suites green: 23 backend tests, 31 Flutter client tests.
