@@ -8,22 +8,14 @@
 | **Milestone 2** | Genuine Cashu NUT-10 & NUT-11 Protected Payments | `COMPLETED` ✅ |
 | **Milestone 2.5** | Consumer Wallet Experience & Centralized Design System | `COMPLETED` ✅ |
 | **Milestone 3A** | Real Two-Device Cashu Test Wallet + Secure Encrypted Delivery | `COMPLETED` ✅ |
-| **Milestone 3B** | Breez Spark Lightning Integration & Testnet Liquidity | `UPCOMING` ⏳ |
+| **Milestone 3B** | Lightning Integration & Ecash Swaps (NUT-04/NUT-05) | `COMPLETED` ✅ |
 | **Milestone 4** | Production Hardening, Multi-Mint Routing & App Store Readiness | `PLANNED` 📋 |
 
 ---
 
-## Milestone 3A Completed Highlights
-- Pinned Nutshell (`0.16.5`) and CDK (`0.18.0-rc.0`).
-- Multi-network environment support (`Local Development`, `Cashu Test`, `Mainnet [Disabled]`).
-- Dual client-side cryptographic identities (`secp256k1` for P2PK spending + `X25519` for encrypted envelope delivery).
-- End-to-end encrypted envelope transport (Ephemeral X25519 + ChaCha20-Poly1305 AEAD). Zero bearer token or private key custody on server.
-- Object-level authorized inbox/outbox messaging and public key directory.
-- Two-device test suite and reproducible claim/refund verification.
-
----
-
-## Milestone 3B Preparation: Breez Spark Integration
-- Integrate Breez Spark SDK for non-custodial Lightning payments and on-chain swap ins/outs.
-- Connect valueless Bitcoin test networks (Signet / Mutinynet).
-- Ensure seamless interoperability between Lightning balances and Cashu protected escrows.
+## Milestone 3B Completed Highlights
+- Created `CashuLightningBridge` for Cashu NUT-04 (Mint via Lightning) and NUT-05 (Melt via Lightning).
+- Exposed `/api/v1/lightning/invoice`, `/api/v1/lightning/pay`, `/api/v1/lightning/mint-quote`, `/api/v1/lightning/melt-quote`.
+- Implemented `LightningService` in `hanbova-app` for invoice generation, payments, and quotes.
+- Integrated `SendScreen` and `ReceiveScreen` with dynamic Lightning invoice creation and fee parsing.
+- Added comprehensive unit and integration tests across both Rust backend (23 tests) and Flutter client (27 tests).
