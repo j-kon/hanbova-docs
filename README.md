@@ -6,16 +6,19 @@ Central architecture, product, security, and developer documentation for the **H
 
 ## Contents
 
-- [Architecture Guide](architecture.md): System diagrams, crate boundaries, and cryptographic sequence flows.
+- [Architecture Guide](architecture.md): System diagrams, crate boundaries, CDK C-FFI native bridge, and cryptographic sequence flows.
 - [Product Vision](product.md): Africa-first context, problem statement, and dual-track payment model.
-- [Threat Model & Security](threat-model.md): Trust boundaries, Cashu custodial model, and post-locktime race condition analysis.
-- [Roadmap](roadmap.md): Milestones 1 through 4 execution plan.
-- [Developer Guide](development.md): Local environment setup, quickstart commands, and test suites.
+- [Threat Model & Security](threat-model.md): Trust boundaries, client authority, Cashu custodial model, and post-locktime race condition analysis.
+- [Roadmap](roadmap.md): Milestones 1 through 5 execution plan (All Completed ✅).
+- [Pitch Presentation](presentation.md): Afro Bitcoin Fellowship 3-minute pitch script, visual diagrams, and metrics.
+- [Developer Guide](development.md): Local environment setup, quickstart commands, Docker stack, and test suites.
+- [ChatGPT / AI Project Context](PROJECT_CONTEXT_CHATGPT.md): Single-file consolidated project overview for AI assistants and reviewers.
 
 ---
 
 ## Related Repositories
 
-- [`hanbova-app`](../hanbova-app): Flutter mobile application client.
-- [`hanbova-backend`](../hanbova-backend): Rust workspace backend API and cryptographic crates.
-- [`hanbova-protocol`](../hanbova-protocol): Protocol specifications and state machine definitions.
+- [`hanbova-app`](https://github.com/j-kon/hanbova-app): Flutter mobile application client (iOS/Android).
+- [`hanbova-backend`](https://github.com/j-kon/hanbova-backend): Rust workspace backend API, CDK C-FFI bridge, and cryptographic crates.
+- [`hanbova-protocol`](https://github.com/j-kon/hanbova-protocol): Protocol specifications and state machine definitions.
+- [`hanbova-docs`](https://github.com/j-kon/hanbova-docs): Documentation, architecture diagrams, and fellowship pitch materials.

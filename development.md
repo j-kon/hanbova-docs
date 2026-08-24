@@ -1,31 +1,64 @@
 # Hanbova Development Guide & Two-Device Testing
 
 ## 1. Prerequisites
-- **Rust toolchain**: `1.75+` (`cargo`, `clippy`, `rustfmt`)
-- **Flutter SDK**: `3.22+` with iOS/Android toolchains
-- **Docker & Docker Compose**: for local PostgreSQL and Nutshell mint
+- **Rust Toolchain**: `1.84+` (`cargo`, `clippy`, `rustfmt`)
+- **Flutter SDK**: `3.29+` with iOS/Android build tools
+- **Docker & Docker Compose**: For local PostgreSQL, Nutshell mint, and containerized API
+- **Xcode / Android Studio**: For running simulators and physical device deployments
 
 ---
 
-## 2. Starting Local Services
+## 2. Quickstart: Running the Complete Stack
 
+### Step 1: Start Containerized Infrastructure
 ```bash
-# 1. Start PostgreSQL and Nutshell Mint
 cd hanbova-backend
 docker compose up -d
+```
+This boots:
+- **PostgreSQL 16**: Port `5434` (mapped to `5432` internally)
+- **Nutshell Cashu Mint**: Port `3338` (serving NUT-00 through NUT-11 with fake wallet backend)
+- **Hanbova API**: Port `8080` (zero-custody encrypted relay)
 
-# 2. Run Backend API
-cargo run --bin hanbova-api
+### Step 2: Build the CDK C-FFI Shared Library (for Desktop/Ffi targets)
+```bash
+cd hanbova-backend
+cargo build --release -p hanbova-cdk-ffi
+```
+
+### Step 3: Run Backend Tests
+```bash
+cd hanbova-backend
+cargo test --workspace --all-targets
+```
+
+### Step 4: Run Flutter Client Tests & Launch App
+```bash
+cd hanbova-app
+flutter pub get
+flutter test
+flutter run -d "iPhone 17" # or your Android emulator / device
 ```
 
 ---
 
-## 3. Two-Device Testing Procedure (Milestone 3A)
+## 3. Automated Test Verification
+
+| Repository | Test Command | Coverage |
+| :--- | :--- | :--- |
+| **`hanbova-backend`** | `cargo test --workspace` | **24/24 Passed** (Core invariants, Auth, CDK FFI, Protected Payments, Relay) |
+| **`hanbova-backend`** | `cargo clippy --workspace --all-targets -- -D warnings` | **0 Warnings** |
+| **`hanbova-app`** | `flutter test` | **42/42 Passed** (Secp256k1 P2PK, BIP-39, CDK FFI, E2EE, UI, Mainnet Safety) |
+| **`hanbova-app`** | `flutter analyze` | **0 Issues** |
+
+---
+
+## 4. Two-Device Testing Procedure
 
 ### Scenario A: Successful Protected Payment Claim
 1. **Device A (Alice)**:
    - Sign up as `@alice`.
-   - Open **Developer Options** -> Ensure network is set to **Cashu Test** (`https://testnut.cashu.space`) or **Local Development**.
+   - Ensure network is set to **Cashu Test** (`https://testnut.cashu.space`) or **Local Development**.
    - Navigate to **Pay** -> **Send Protected**.
    - Enter `@bob`, Amount `100` test sats, Protection Window `60 seconds`.
    - Confirm and send.
