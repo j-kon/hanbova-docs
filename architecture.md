@@ -13,20 +13,22 @@ Hanbova is structured into four focused, decoupled project repositories:
 │  - Client-Side Cryptographic Identities:               │
 │      1. Protected Payment Key (secp256k1 P2PK)         │
 │      2. Transport Encryption Key (X25519)              │
+│      3. BIP-39 12-Word Mnemonic & 512-Bit Seed         │
 │  - End-to-End Encrypted Envelope Service (ChaCha20)    │
-└──────────────────────────┬─────────────────────────────┘
-                           │ Authenticated REST (/api/v1)
-                           ▼
-┌────────────────────────────────────────────────────────┐
-│               hanbova-backend (Rust / Axum)            │
-│  - Tokio Async Runtime                                 │
-│  - Tower HTTP Middleware (CORS, Trace, Request Limits) │
-│  - Argon2id + JWT + Rotating Refresh Tokens            │
-│  - Lightning REST Routes (/api/v1/lightning/...)       │
-│  - Public Key Routing Directory (/api/v1/users/...)    │
-│  - Encrypted Envelope Relay (/api/v1/protected-msg...) │
-│  - PostgreSQL Persistence via SQLx (Ciphertext Only)   │
+│  - CdkFfiBindings (Dart:FFI Native Bridge)             │
 └────────────┬─────────────────────────────┬─────────────┘
+             │ Dart FFI (In-Process)       │ Authenticated REST (/api/v1)
+             ▼                             ▼
+┌───────────────────────────┐ ┌────────────────────────────────────────────────────────┐
+│crates/hanbova-cdk-ffi     │ │               hanbova-backend (Rust / Axum)            │
+│ - Official CDK 0.18-rc.0  │ │  - Tokio Async Runtime                                 │
+│ - cdk-redb (Embedded DB)  │ │  - Tower HTTP Middleware (CORS, Trace, Request Limits) │
+│ - NUT-04, 07, 10, 11 P2PK │ │  - Argon2id + JWT + Rotating Refresh Tokens            │
+│ - Client Wallet Authority │ │  - Zero-Custody Payment Coordination (Auth-Scoped)     │
+└────────────┬──────────────┘ │  - Public Key Routing Directory (/api/v1/users/...)    │
+             │                │  - Encrypted Envelope Relay (/api/v1/protected-msg...) │
+             │                │  - PostgreSQL Persistence via SQLx (Ciphertext Only)   │
+             │                └────────────────────────────────────────────────────────┘
              │                             │
              ▼                             ▼
 ┌───────────────────────────┐ ┌───────────────────────────┐
