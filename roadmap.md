@@ -10,19 +10,21 @@
 | **Milestone 3A** | Real Two-Device Cashu Test Wallet + Secure Encrypted Delivery | `COMPLETED` ✅ |
 | **Milestone 3A.1** | Security Correction: Move Cashu Wallet Authority to Client & Genuine Secp256k1 | `COMPLETED` ✅ |
 | **Milestone 3A.2** | Real CDK Client Wallet Integration via Thin Rust C-FFI Bridge & Zero-Custody Backend Hardening | `COMPLETED` ✅ |
-| **Milestone 3A.2.1** | Mobile Integration & Safety Stabilization (Android NDK / iOS FFI, Mainnet Lock, Authorization 403) | `COMPLETED` ✅ |
-| **Milestone 3B** | Lightning Integration & Ecash Swaps (NUT-04/NUT-05) | `COMPLETED` ✅ |
-| **Milestone 4** | Production Hardening, BIP-39 Backup, Biometrics & Multi-Mint | `COMPLETED` ✅ |
-| **Milestone 5** | Public Mainnet Beta, On-Chain Swaps & App Store Publishing Readiness | `COMPLETED` ✅ |
+| **Milestone 3A.2.1** | Mobile Integration & Safety Stabilization (Android NDK / iOS FFI, Mainnet Lock, Authorization 403) | `COMPLETED` ✅ (on `milestone/3a2-1-mobile-stabilization`) |
+| **Milestone 3B** | Lightning Integration & Ecash Swaps (NUT-04/NUT-05) | `Development / experimental` 🚧 |
+| **Milestone 4** | Production Hardening, BIP-39 Backup, Biometrics & Multi-Mint | `Partial` ⚠️ |
+| **Milestone 5** | Public Mainnet Beta, On-Chain Swaps & App Store Publishing Readiness | `Mainnet disabled / future` 🔒 |
 
 ---
 
 ## Milestone 3A.2.1 Completed Highlights (Current Active Branch: `milestone/3a2-1-mobile-stabilization`)
-- **Mainnet Safety Hardening**: Strict safety lock active (`NetworkConfig.mainnet.isEnabled = false`); runtime switching blocked; UI clearly displays test environment badge.
+- **Mainnet Safety Hardening**: Strict safety lock active (`NetworkConfig.mainnet.isEnabled = false`); runtime switching blocked; UI clearly displays test environment badge (`TEST MODE`).
 - **Backend Authorization & Spoofing Elimination**: Unconditionally overwritten `payload.sender_id = Some(auth_user.user_id)`; returns HTTP 403 Forbidden for unauthorized access; enforces strict role state transitions (`"claimed"` strictly recipient, `"refunded"` strictly sender).
-- **Mobile C-FFI Binary Packaging**: Compiled Android NDK native libraries (`arm64-v8a` and `x86_64`) into `android/app/src/main/jniLibs/`; compiled release binaries for iOS/Darwin targets (`aarch64-apple-darwin`, `aarch64-apple-ios-sim`).
+- **Mobile C-FFI Binary Packaging**: Compiled Android NDK native libraries (`arm64-v8a` and `x86_64`) into `android/app/src/main/jniLibs/`; compiled universal static framework (`HanbovaCdkFfi.xcframework`) linking physical ARM64 (`aarch64-apple-ios`) and universal simulator (`aarch64-apple-ios-sim` + `x86_64-apple-ios`).
 - **Wallet Database Isolation**: Redb embedded storage isolated per-user and per-environment under `{app_support}/wallets/{environment}/{userId}/wallet.redb`.
-- **Automated Verification**: 24/24 Rust backend workspace tests pass (including NUT-04 minting, Alice &rarr; Bob NUT-11 claim, and Alice post-locktime refund), 0 clippy warnings, `flutter analyze` 0 issues, 44/44 Flutter tests pass.
+- **Controlled Cashu Mint Verification**: Verified NUT-04 funding quote creation & minting via controlled local Cashu mint integration using test/mock Lightning settlement, two-user NUT-11 P2PK protected send (Alice &rarr; Bob claim), and Alice post-locktime refund.
+- **Payment Status Authority**: Documented backend states (`claimed`, `refunded`) as coordination metadata; true cryptographic spending authority resides strictly in the Cashu mint.
+- **Automated Verification**: 24/24 Rust backend workspace tests pass, 0 clippy warnings, `flutter analyze` 0 issues, 44/44 Flutter tests pass.
 
 ---
 
@@ -39,13 +41,13 @@
 - **PointyCastle Secp256k1 Service**: Genuine cryptographically secure 256-bit scalar generation in range $[1, n-1]$ with elliptic-curve scalar multiplication ($Q = G \cdot d$) to derive standard 33-byte compressed public keys.
 - **Client-Side Wallet Authority**: Client wallet directly owns and stores all spendable Cashu proofs and NUT-11 escrow keys across restarts (`CashuWalletService` & `CashuWalletStorage`).
 - **Zero-Custody Backend**: Completely stripped `claim_proof` and private keys from backend API models and database. Backend serves strictly as a zero-custody coordination and encrypted message relay service.
-- **Automated Test Coverage**: 1,000-key uniqueness and validity tests, P2PK claim, unauthorized claim rejection, and post-locktime refund tests all passing (39 Flutter tests, 23 Backend tests).
+- **Automated Test Coverage**: 1,000-key uniqueness and validity tests, P2PK claim, unauthorized claim rejection, and post-locktime refund tests all passing.
 
 ---
 
-## Milestone 4 Completed Highlights
-- Complete 2048-word BIP-39 English dictionary and `MnemonicService` for 12-word seed phrase generation, validation, and autocomplete.
+## Milestone 4 Partial Highlights
+- 2048-word BIP-39 English dictionary and `MnemonicService` for 12-word seed phrase generation, validation, and autocomplete.
 - Interactive `BackupSeedScreen` with tap-to-reveal, screenshot security warnings, and 3-word verification quiz.
-- `RestoreSeedScreen` with 12-word entry, live autocomplete suggestions, and checksum verification.
+- `RestoreSeedScreen` with 12-word entry, live autocomplete suggestions, and checksum verification (full cross-device restore disabled pending auxiliary key derivation).
 - `BiometricService` wrapping platform Face ID, Touch ID, and hardware key security.
 - `MintsScreen` for multi-mint management, active mint switching, and live NUT-11 capability probe validation.

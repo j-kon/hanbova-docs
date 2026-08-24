@@ -174,18 +174,21 @@ The transport path uses:
 
 The Hanbova backend is designed to store ciphertext, routing information, and payment metadata rather than plaintext Cashu bearer tokens.
 
+### Key Storage & Mnemonic Architecture
+
+In `CryptoIdentityService`, keys are stored directly in platform secure storage (`FlutterSecureStorage`):
+- `hanbova_${storagePrefix}_${userId}_transport_priv`: 32-byte X25519 transport private key
+- `hanbova_${storagePrefix}_${userId}_protected_priv`: 32-byte secp256k1 P2PK private key
+- `hanbova_${storagePrefix}_${userId}_mnemonic`: 12-word BIP-39 mnemonic
+
+The active BIP-39 mnemonic is converted to a 512-bit seed (`mnemonicToSeedHex`) and supplied to the CDK Rust FFI wallet (`hanbova_cdk_wallet_create`), which derives the master ecash wallet keyset.
+
 ### Important Limitation
 
-The current P2PK and X25519 identities are generated separately from the BIP-39 mnemonic.
+Because `protected_priv` (secp256k1) and `transport_priv` (X25519) are stored as separate keys in secure storage rather than derived hierarchically (e.g. via BIP-32 / SLIP-0010 paths) from the BIP-39 master seed:
+- Re-importing a mnemonic alone into a fresh installation restores the CDK wallet master seed and balance proofs, but **does not automatically recover previously generated P2PK claim/refund keys or the X25519 transport identity**.
+- Therefore, full cross-installation wallet recovery is explicitly marked disabled in current test builds (`Recovery is not available in this test build yet.`).
 
-Therefore, the mnemonic does **not currently prove complete recovery** of:
-
-- the P2PK claim identity
-- the sender refund identity
-- the X25519 transport identity
-- every protected payment state
-
-This must be fixed or clearly documented before recovery is presented as complete.
 
 ---
 
@@ -437,6 +440,8 @@ Poll/check quote state
     v
 Mint genuine proofs
 ```
+
+The current automated test suite verifies this via a **controlled local Cashu mint integration using test/mock Lightning settlement**, where quotes are settled through the local test backend. This is not an external or production Lightning funding test.
 
 Creating a quote and immediately calling `mint()` without satisfying the quote is not a complete remote test-mint funding flow.
 
@@ -726,16 +731,16 @@ Use the following development status until further verification:
 
 | Milestone | Status |
 | --- | --- |
-| Milestone 1: Foundation | Completed |
-| Milestone 2: Protected Payment Protocol | Completed at protocol/reference-test level |
-| Milestone 2.5: Consumer Wallet UX & Brand V3 | Completed |
-| Milestone 3A: Two-device Cashu Test Wallet | Completed |
-| Milestone 3A.1: Client Wallet Authority & Key Correction | Completed |
-| Milestone 3A.2: Real CDK Integration | Completed |
+| Milestone 1: Foundation | Completed ✅ |
+| Milestone 2: Protected Payment Protocol | Completed at protocol/reference-test level ✅ |
+| Milestone 2.5: Consumer Wallet UX & Brand V3 | Completed ✅ |
+| Milestone 3A: Two-device Cashu Test Wallet | Completed ✅ |
+| Milestone 3A.1: Client Wallet Authority & Key Correction | Completed ✅ |
+| Milestone 3A.2: Real CDK Integration | Completed ✅ |
 | Milestone 3A.2.1: Mobile Integration & Safety Stabilization | **Completed (on `milestone/3a2-1-mobile-stabilization`)** ✅ |
-| Milestone 3B: Production Lightning Wallet | In Progress / Development |
-| Milestone 4: Recovery/Hardening | Partial / Hardened |
-| Milestone 5: Mainnet Beta | **Safety-Locked / Disabled for Testing** |
+| Milestone 3B: Production Lightning Wallet | Development / experimental 🚧 |
+| Milestone 4: Recovery/Hardening | Partial ⚠️ |
+| Milestone 5: Mainnet Beta | Mainnet disabled / future 🔒 |
 
 ---
 
@@ -748,9 +753,10 @@ Completed items on branch `milestone/3a2-1-mobile-stabilization`:
 
 - **Mainnet Safety**: Disabled `NetworkConfig.mainnet.isEnabled = false`; runtime switching blocked; UI clearly displays `TEST MODE`.
 - **Backend Authorization**: Overwritten `payload.sender_id = Some(auth_user.user_id)` to eliminate sender spoofing; unauthorized access returns `403 Forbidden`; strict role-based status updates (`"claimed"` strictly recipient, `"refunded"` strictly sender).
-- **Mobile C-FFI Binary Packaging**: Compiled Android NDK native libraries (`arm64-v8a` and `x86_64`) into `android/app/src/main/jniLibs/`; compiled release binaries for iOS/Darwin targets (`aarch64-apple-darwin`, `aarch64-apple-ios-sim`).
+- **Mobile C-FFI Binary Packaging**: Compiled Android NDK native libraries (`arm64-v8a` and `x86_64`) into `android/app/src/main/jniLibs/`; compiled universal static framework (`HanbovaCdkFfi.xcframework`) linking physical ARM64 (`aarch64-apple-ios`) and universal simulator (`aarch64-apple-ios-sim` + `x86_64-apple-ios`).
 - **Wallet Database Isolation**: Redb embedded storage isolated per-user and per-environment under `{app_support}/wallets/{environment}/{userId}/wallet.redb`.
-- **NUT-04 & Protected Send Verification**: Verified NUT-04 funding quote creation & minting, two-user NUT-11 P2PK protected send (Alice &rarr; Bob claim), and Alice post-locktime refund.
+- **Controlled Cashu Mint Verification**: Verified NUT-04 funding quote creation & minting via controlled local Cashu mint integration using test/mock Lightning settlement, two-user NUT-11 P2PK protected send (Alice &rarr; Bob claim with exact balance assertions), and Alice post-locktime refund.
+- **Payment Status Authority**: Formally documented that backend `claimed`/`refunded` states are coordination metadata for UI; true cryptographic spending authority and proof state resides strictly in the Cashu mint.
 - **Logging & Secrets Audit**: Confirmed zero private keys, seed phrases, bearer tokens, or database secrets are logged.
 - **All Automated Tests Passing**: 24/24 Rust tests, 44/44 Flutter tests.
 
