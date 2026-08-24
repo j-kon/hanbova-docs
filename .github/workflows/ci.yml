@@ -2,13 +2,13 @@ name: Hanbova Documentation CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'milestone/**' ]
   pull_request:
     branches: [ main ]
 
 jobs:
   validate-docs:
-    name: Documentation Integrity & Link Check
+    name: Documentation Integrity & Structure Check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -16,9 +16,11 @@ jobs:
 
       - name: Verify Core Documentation Structure
         run: |
+          test -f README.md
           test -f architecture.md
-          test -f security.md
-          test -f quickstart.md
+          test -f threat-model.md
+          test -f product.md
           test -f roadmap.md
-          test -f contributing.md
-          echo "All documentation files present and intact!"
+          test -f development.md
+          test -f presentation.md
+          echo "All core documentation files verified!"
