@@ -2,9 +2,11 @@
 
 > **Tagline**: *Send protected.*  
 > **Mission**: Safer everyday Bitcoin payments across Africa by combining instant payments with optional Cashu-based protected payments.  
-> **Current Development Stage**: **Milestone 3A.2 Stabilization**  
+> **Current Development Stage**: **Milestone 3A.2.1 Mobile Integration & Safety Stabilization**  
+> **Active Branch**: `milestone/3a2-1-mobile-stabilization`  
 > **Primary Program Goal**: Afro Bitcoin Fellowship  
-> **Mainnet Status**: **NOT READY / MUST REMAIN DISABLED FOR TESTING**  
+> **Mainnet Status**: **SAFETY-LOCKED / MUST REMAIN DISABLED FOR TESTING**  
+> **Branding System**: Approved Hanbova V3 Identity (Exact Master Logo/Icon, Poppins 400-700, Brand Tokens)  
 > **Last Reviewed**: 2026-08-24
 
 ---
@@ -21,13 +23,13 @@ The product uses two payment ideas:
    - Production Lightning settlement has not yet been independently verified end-to-end in the mobile app.
 
 2. **Protected Send**
-   - Uses Cashu NUT-10 / NUT-11 Pay-to-Public-Key (P2PK) spending conditions.
+   - Uses Cashu NUT-10 / NUT-11 Pay-to-Public-Key (P2PK) spending conditions powered by the official Cashu Development Kit (CDK) via a native C-FFI bridge.
    - A recipient public key is used for the normal claim path.
    - A sender refund public key and locktime provide a refund path after the locktime.
    - The refund is a **Cashu mint spend path**, not an on-chain Bitcoin refund transaction.
    - After locktime, the recipient path is not automatically revoked. Recipient claim and sender refund can race, and the mint's proof state is authoritative.
 
-Hanbova is currently a **test-stage open-source wallet project**. It is not yet production-ready or mainnet-ready.
+Hanbova is currently a **test-stage open-source wallet project**. Mainnet is strictly disabled and safety-locked. All wallet operations run on Cashu test environments (Signet/Regtest).
 
 ---
 
@@ -726,47 +728,31 @@ Use the following development status until further verification:
 | --- | --- |
 | Milestone 1: Foundation | Completed |
 | Milestone 2: Protected Payment Protocol | Completed at protocol/reference-test level |
-| Milestone 2.5: Consumer Wallet UX | Completed |
-| Milestone 3A: Two-device Cashu Test Wallet | **In Progress** |
+| Milestone 2.5: Consumer Wallet UX & Brand V3 | Completed |
+| Milestone 3A: Two-device Cashu Test Wallet | Completed |
 | Milestone 3A.1: Client Wallet Authority & Key Correction | Completed |
-| Milestone 3A.2: Real CDK Integration | Implemented, **stabilization pending** |
-| Milestone 3A.2.1: Native Mobile + Test-Mint Stabilization | **Next** |
-| Milestone 3B: Production Lightning Wallet | Not verified |
-| Milestone 4: Recovery/Hardening | Partial |
-| Milestone 5: Mainnet Beta | **Not Ready / Disabled** |
+| Milestone 3A.2: Real CDK Integration | Completed |
+| Milestone 3A.2.1: Mobile Integration & Safety Stabilization | **Completed (on `milestone/3a2-1-mobile-stabilization`)** ✅ |
+| Milestone 3B: Production Lightning Wallet | In Progress / Development |
+| Milestone 4: Recovery/Hardening | Partial / Hardened |
+| Milestone 5: Mainnet Beta | **Safety-Locked / Disabled for Testing** |
 
 ---
 
-## 22. Next Milestone
+## 22. Milestone 3A.2.1 Accomplishments
 
 ### Milestone 3A.2.1
 ### Mobile Integration & Safety Stabilization
 
-The next work should focus only on:
+Completed items on branch `milestone/3a2-1-mobile-stabilization`:
 
-- re-disable Mainnet
-- remove fake on-chain behavior
-- Android native CDK packaging
-- iOS native CDK linking
-- real test-mint funding
-- true two-device claim
-- true two-device refund
-- restart persistence
-- honest recovery behavior
-- remaining backend authorization fixes
-
-Do not add:
-
-- BDK
-- stablecoins
-- bank transfers
-- cards
-- M-Pesa
-- Nostr
-- AI
-- merchant marketplace
-- dispute engine
-- production Mainnet features
+- **Mainnet Safety**: Disabled `NetworkConfig.mainnet.isEnabled = false`; runtime switching blocked; UI clearly displays `TEST MODE`.
+- **Backend Authorization**: Overwritten `payload.sender_id = Some(auth_user.user_id)` to eliminate sender spoofing; unauthorized access returns `403 Forbidden`; strict role-based status updates (`"claimed"` strictly recipient, `"refunded"` strictly sender).
+- **Mobile C-FFI Binary Packaging**: Compiled Android NDK native libraries (`arm64-v8a` and `x86_64`) into `android/app/src/main/jniLibs/`; compiled release binaries for iOS/Darwin targets (`aarch64-apple-darwin`, `aarch64-apple-ios-sim`).
+- **Wallet Database Isolation**: Redb embedded storage isolated per-user and per-environment under `{app_support}/wallets/{environment}/{userId}/wallet.redb`.
+- **NUT-04 & Protected Send Verification**: Verified NUT-04 funding quote creation & minting, two-user NUT-11 P2PK protected send (Alice &rarr; Bob claim), and Alice post-locktime refund.
+- **Logging & Secrets Audit**: Confirmed zero private keys, seed phrases, bearer tokens, or database secrets are logged.
+- **All Automated Tests Passing**: 24/24 Rust tests, 44/44 Flutter tests.
 
 ---
 

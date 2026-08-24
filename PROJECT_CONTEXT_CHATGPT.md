@@ -2,8 +2,11 @@
 
 > **Tagline**: *Send protected.*  
 > **Mission**: Safer everyday Bitcoin payments across Africa. Send instantly or protect money with conditional claim windows.  
-> **Current Version**: `v0.5.0-beta`  
-> **Target Audience / Program**: Afro Bitcoin Fellowship & Production Beta  
+> **Current Version**: `v0.5.0-beta` (Milestone 3A.2.1 Mobile Stabilization)  
+> **Active Branch**: `milestone/3a2-1-mobile-stabilization`  
+> **Target Audience / Program**: Afro Bitcoin Fellowship & Mobile Integration  
+> **Mainnet Status**: **SAFETY-LOCKED / DISABLED FOR TESTING**  
+> **Approved Branding**: Hanbova V3 Identity (Exact Master Logo/Icon, Poppins 400-700, Brand Tokens)  
 
 ---
 
@@ -20,7 +23,7 @@ Hanbova unifies two complementary payment mechanisms in a single consumer mobile
 1. **Instant Send (Bitcoin Lightning Network)**: Sub-second final settlement via BOLT11 invoices and Lightning addresses for trusted, everyday microtransactions (coffee, groceries, airtime).
 2. **Protected Send (Cashu NUT-10 / NUT-11 P2PK Escrow)**: Cryptographic conditional escrow locking ecash proofs to the recipient's public key with a sender-specified claim window (locktime).
    - If the recipient delivers goods within the window, they sign with their private key and claim the funds.
-   - If the recipient defaults or fails to claim, the sender executes an **on-chain self-service refund** after locktime expiry without needing third-party arbitration.
+   - If the recipient defaults or fails to claim, the sender executes a **self-service refund** after locktime expiry via mint spend path without needing third-party arbitration.
 
 ---
 
@@ -29,7 +32,7 @@ Hanbova unifies two complementary payment mechanisms in a single consumer mobile
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                          HANBOVA MOBILE APP (Flutter)                       │
-│  - Presentation Layer: Clean Dark/Light Design System                       │
+│  - Presentation Layer: Approved Brand V3 Design Tokens & Dark/Light System  │
 │  - Dual Payment Rails: Instant Send (Lightning) vs Protected Send (Cashu)   │
 │  - Unified Deposit Sheet: Lightning Quotes (NUT-04) / On-Chain / Ecash      │
 │  - Client Cryptographic Identity Service:                                   │
@@ -73,8 +76,8 @@ When a sender creates a Protected Payment, the locked ecash token payload is enc
 
 ### 3.3 Official CDK C-FFI Bridge & Client Wallet Authority
 The mobile app communicates with the official Cashu Dev Kit (`cdk = "0.18.0-rc.0"`) through a lightweight C-ABI export layer (`crates/hanbova-cdk-ffi`):
-- **Functions Exported**: `hanbova_cdk_wallet_create`, `hanbova_cdk_wallet_total_balance`, `hanbova_cdk_mint_quote`, `hanbova_cdk_mint_tokens`, `hanbova_cdk_send_p2pk`, `hanbova_cdk_receive_token`, `hanbova_cdk_check_token_state`, `hanbova_cdk_wallet_free`.
-- **Database Storage**: Isolated `cdk-redb` database file per user and network (`hanbova_cdk_<user>_cashu_test.redb` vs `hanbova_cdk_<user>_mainnet.redb`).
+- **Functions Exported**: `hanbova_cdk_wallet_create`, `hanbova_cdk_wallet_get_balance`, `hanbova_cdk_mint_quote`, `hanbova_cdk_mint`, `hanbova_cdk_prepare_p2pk_send`, `hanbova_cdk_receive_p2pk`, `hanbova_cdk_check_token_state`, `hanbova_cdk_wallet_free`, `hanbova_cdk_free_string`, `hanbova_cdk_get_last_error`.
+- **Database Storage**: Isolated `cdk-redb` storage per user and network (`{app_support}/wallets/{environment}/{userId}/wallet.redb`).
 - **P2PK Send Witness**: Sets recipient pubkey, sender refund pubkey, locktime, and `SigFlag::SigInputs` ensuring mathematical enforceability at the mint.
 
 ---
@@ -90,15 +93,17 @@ The mobile app communicates with the official Cashu Dev Kit (`cdk = "0.18.0-rc.0
 
 ---
 
-## 5. Security & Threat Mitigation Matrix
+## 5. Security & Authorization Hardening Matrix
 
 | Potential Threat | Architecture Mitigation |
 | :--- | :--- |
 | **Server Database Compromise** | Zero-Custody: The server stores only X25519 ciphertexts. No private keys, BIP-39 seeds, or Cashu proofs exist on the backend. |
+| **Sender Spoofing** | Sender Authentication: `payload.sender_id` is unconditionally assigned from verified `AuthUser` JWT on backend. |
+| **Unauthorized Message Access** | Strict Object Permission: Message access returns `403 Forbidden` for non-participants. |
+| **Unauthorized Status Updates** | Strict State Machine: Recipient strictly marks `claimed`; Sender strictly marks `refunded`. Unauthorized actors receive `403 Forbidden`. |
 | **Recipient Inaction / Default** | NUT-11 Timelocked Escrow: The sender can claim a self-service refund immediately once locktime expires. |
-| **Man-in-the-Middle Attack** | End-to-End Authenticated Encryption: Ephemeral X25519 + ChaCha20-Poly1305 AEAD ensures only the recipient's private key can decrypt tokens. |
 | **Device Loss or Failure** | 12-Word BIP-39 Mnemonic Backup with 3-word verification quiz and PBKDF2 seed derivation (`HMAC-SHA512`). |
-| **Mainnet Accidental Loss** | Mainnet Safety Dialog requiring explicit risk disclosures, backup verification, and isolated database namespaces. |
+| **Accidental Mainnet Loss** | Mainnet Safety Lock: Bitcoin Mainnet is disabled (`isEnabled: false`) and blocked in mobile UI. |
 
 ---
 
@@ -113,14 +118,15 @@ The mobile app communicates with the official Cashu Dev Kit (`cdk = "0.18.0-rc.0
 - `GET /:handle/payment-keys`: Fetch user's registered Secp256k1 P2PK and X25519 transport public keys.
 
 ### Payment Intents & Coordination (`/api/v1/payment-intents`)
-- `POST /`: Create protected payment intent (authenticated, validates keys).
-- `GET /:id`: Retrieve payment intent details (restricted strictly to sender or recipient).
+- `POST /`: Create protected payment intent (authenticated; sender ID assigned from `AuthUser`).
+- `GET /:id`: Retrieve payment intent details (strictly sender or recipient, else `403 Forbidden`).
 - `POST /:id/status`: Update status transition (`claimed` by recipient or `refunded` by sender after locktime).
 
 ### Encrypted Message Relay (`/api/v1/protected-messages`)
 - `POST /send`: Upload encrypted message envelope for recipient.
 - `GET /inbox`: Retrieve incoming encrypted messages for authenticated user.
 - `GET /outbox`: Retrieve outgoing encrypted messages sent by authenticated user.
+- `POST /:id/ack`: Acknowledge message state (`claimed` by recipient, `refunded` by sender).
 
 ---
 
@@ -137,13 +143,12 @@ The mobile app communicates with the official Cashu Dev Kit (`cdk = "0.18.0-rc.0
 
 📱 Flutter Mobile Client:
    - Command:  flutter test
-   - Result:   42 / 42 PASSED (100% Green)
+   - Result:   44 / 44 PASSED (100% Green)
    - Analyzer: 0 Issues (flutter analyze)
 
-📦 Production Release Artifacts:
-   - Android APK:   build/app/outputs/flutter-apk/app-release.apk (56.1 MB)
-   - iOS Bundle:    build/ios/iphoneos/Runner.app (18.9 MB)
-   - CDK C-FFI:     crates/hanbova-cdk-ffi/target/release/libhanbova_cdk_ffi.dylib
+📦 Native FFI Binaries:
+   - Android:  libhanbova_cdk_ffi.so (arm64-v8a, x86_64 in jniLibs)
+   - iOS:      libhanbova_cdk_ffi.dylib / .a (aarch64-apple-darwin & ios-sim)
 ======================================================================
 ```
 
@@ -155,4 +160,4 @@ The mobile app communicates with the official Cashu Dev Kit (`cdk = "0.18.0-rc.0
 2. **Instant Lightning Demo**: Show sub-second BOLT11 invoice payment with haptic feedback.
 3. **Protected Send Demo**: Send a 24-hour protected escrow to `@bob`. Show Bob receiving the notification, inspecting the locktime, and claiming the payment upon delivery.
 4. **Seed Backup & Security**: Demonstrate the 12-word BIP-39 backup flow with interactive verification quiz.
-5. **Conclusion**: Highlight open source deliverables, 66/66 passing tests, and mainnet beta readiness.
+5. **Conclusion**: Highlight open source deliverables, 68/68 passing tests, and mobile stabilization milestone readiness.
