@@ -13,6 +13,7 @@ Central architecture, product, security, and developer documentation for the **H
 - [Pitch Presentation](presentation.md): Afro Bitcoin Fellowship 3-minute pitch script, visual diagrams, and metrics.
 - [Developer Guide](development.md): Local environment setup, quickstart commands, Docker stack, and test suites.
 - [ChatGPT / AI Project Context](PROJECT_CONTEXT_CHATGPT.md): Single-file consolidated project overview for AI assistants and reviewers.
+- [Verified Project Context & Development State](PROJECT_CONTEXT_CHATGPT_VERIFIED.md): In-depth verified state, boundary analysis, security considerations, and fellowship demonstration guide.
 
 ---
 
