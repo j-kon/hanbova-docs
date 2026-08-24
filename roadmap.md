@@ -12,9 +12,16 @@
 | **Milestone 3A.2** | Real CDK Client Wallet Integration via Thin Rust C-FFI Bridge & Zero-Custody Backend Hardening | `COMPLETED` ✅ |
 | **Milestone 3B** | Lightning Integration & Ecash Swaps (NUT-04/NUT-05) | `COMPLETED` ✅ |
 | **Milestone 4** | Production Hardening, BIP-39 Backup, Biometrics & Multi-Mint | `COMPLETED` ✅ |
-| **Milestone 5** | Public Mainnet Beta, On-Chain Swaps & App Store Publishing | `PLANNED` 📋 |
+| **Milestone 5** | Public Mainnet Beta, On-Chain Swaps & App Store Publishing Readiness | `COMPLETED` ✅ |
 
 ---
+
+## Milestone 5 Completed Highlights
+- **Mainnet Beta Safety Enclosure**: Activated `HanbovaNetwork.mainnet` with isolated storage prefix `wallet_mainnet` and dedicated Redb database paths. Added `MainnetSafetyDialog` requiring explicit risk acknowledgment and seed backup verification.
+- **Unified Deposit Sheet (`UnifiedDepositSheet`)**: Integrated 3-in-1 deposit interface for Lightning invoices (NUT-04 mint quotes), on-chain Bitcoin deposit addresses with QR code rendering, and direct Cashu ecash token redemption.
+- **Dynamic Network Indicators**: Real-time balance card badge switching between `MAINNET BETA • Real Bitcoin` and `TEST MODE • No monetary value`, with context-aware satoshi display.
+- **App Store & Release Manifest Packaging**: Configured iOS `Info.plist` with `NSFaceIDUsageDescription` and `NSCameraUsageDescription`, and Android `AndroidManifest.xml` with `USE_BIOMETRIC`, `CAMERA`, and `INTERNET` permissions.
+- **All Test Suites Green**: 24/24 Rust backend workspace tests, 42/42 Flutter client tests, 0 linter issues.
 
 ## Milestone 3A.2 Completed Highlights
 - **Thin Rust C-FFI Bridge (`crates/hanbova-cdk-ffi`)**: Wraps official `cdk` (`0.18.0-rc.0`) and persistent embedded `cdk-redb` storage with isolated per-user, per-network database paths.
