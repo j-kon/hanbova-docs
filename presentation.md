@@ -81,7 +81,11 @@ sequenceDiagram
 
 ## 5. Technology Stack & Open Source Deliverables
 
-- **Mobile Client**: Flutter 3.29, Riverpod, GoRouter, Biometrics, Secure Key Storage.
-- **Backend & Escrow**: Rust 1.84, Axum, Cashu Dev Kit (`0.18.0-rc.0`), SQLx, PostgreSQL.
+- **Mobile Client**: Flutter 3.29, Riverpod, GoRouter, Biometrics, Secure Key Storage, PointyCastle Secp256k1, Dart C-FFI Bindings.
+- **Backend & Escrow**: Rust 1.84, Axum, Cashu Dev Kit (`cdk = 0.18.0-rc.0`, `cdk-redb`), Tokio, SQLx, PostgreSQL.
 - **Protocols**: Cashu NUT-00 through NUT-11, Hanbova Protected Protocol (HPP-01 & HPP-02).
-- **Test Coverage**: 55 automated unit & integration tests passing (100% green).
+- **Security & Authority**: Client-side wallet authority, zero-custody server coordination, X25519 E2EE envelope relay, and persistent BIP-39 mnemonic backup.
+- **Test Coverage**: **66 automated unit & integration tests passing (100% green)**:
+  - 42 Flutter client unit/widget/crypto tests (`flutter test`)
+  - 24 Rust backend workspace tests (`cargo test --workspace`)
+  - Continuous integration via GitHub Actions on all branches.
