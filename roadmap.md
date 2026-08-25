@@ -22,9 +22,14 @@
 - **Backend Authorization & Spoofing Elimination**: Unconditionally overwritten `payload.sender_id = Some(auth_user.user_id)`; returns HTTP 403 Forbidden for unauthorized access; enforces strict role state transitions (`"claimed"` strictly recipient, `"refunded"` strictly sender).
 - **Mobile C-FFI Binary Packaging**: Compiled Android NDK native libraries (`arm64-v8a` and `x86_64`) into `android/app/src/main/jniLibs/`; compiled universal static framework (`HanbovaCdkFfi.xcframework`) linking physical ARM64 (`aarch64-apple-ios`) and universal simulator (`aarch64-apple-ios-sim` + `x86_64-apple-ios`).
 - **Wallet Database Isolation**: Redb embedded storage isolated per-user and per-environment under `{app_support}/wallets/{environment}/{userId}/wallet.redb`.
-- **Controlled Cashu Mint Verification**: Verified NUT-04 funding quote creation & minting via controlled local Cashu mint integration using test/mock Lightning settlement, two-user NUT-11 P2PK protected send (Alice &rarr; Bob claim), and Alice post-locktime refund.
+- **Financial Authority & Consistency Gate**:
+  - Replaced all mock/synthetic claim pathways in `ClaimPaymentScreen` with genuine CDK NUT-11 witness settlements.
+  - Eliminated simulated transaction seed data (`TransactionsNotifier` initializes strictly empty `[]`; demo seeder guarded by `kDebugMode`).
+  - Strict Cashu ecash token secrecy enforced (tokens never placed in `TransactionModel` presentation metadata).
+  - Delivery failure resilience: relay failures preserve locked ecash in client secure storage, allowing non-duplicating retry and locktime refunds.
+  - Recipient binding regression fix: dynamic input edits clear cached recipient keys and re-resolve new recipient keys deterministically.
 - **Payment Status Authority**: Documented backend states (`claimed`, `refunded`) as coordination metadata; true cryptographic spending authority resides strictly in the Cashu mint.
-- **Automated Verification**: 24/24 Rust backend workspace tests pass, 0 clippy warnings, `flutter analyze` 0 issues, 44/44 Flutter tests pass.
+- **Automated Verification**: 24/24 Rust backend workspace tests pass, 0 clippy warnings, `flutter analyze` 0 issues, 63/63 Flutter tests pass.
 
 ---
 
