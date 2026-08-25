@@ -59,10 +59,13 @@
 
 ---
 
-## Milestone 4 Partial Highlights
-- **Deterministic Key Hierarchy & Full Mnemonic Recovery**:
-  - Domain-separated HMAC-SHA512 derivation from BIP-39 mnemonic seed (`Hanbova P2PK Identity Derivation` & `Hanbova X25519 Transport Derivation`).
-  - Single 12-word mnemonic phrase fully recovers CDK wallet balance, secp256k1 P2PK identity, and X25519 transport identity on fresh installations.
+## Milestone 4 Partial Highlights (Status: `PARTIAL` ⚠️)
+- **Deterministic Key Hierarchy & Recovery Scope**:
+  - Mnemonic restores CDK seed, primary secp256k1 P2PK identity, and X25519 transport identity across restarts.
+  - Normal local redb restart persistence works for ongoing balances and proofs.
+  - **Important Technical Limitation**: Full off-device proof recovery after fresh-install data loss requires NUT-13 (deterministic secret derivation / restore from mint), which is planned for future work.
+  - Per-payment ephemeral refund keys stored in local redb are not yet fully recoverable after total client data loss.
+  - Milestone 4 remains strictly `PARTIAL`.
 - **BIP-39 Mnemonic Lifecycle**: 2048-word BIP-39 English dictionary and `MnemonicService` for 12-word seed phrase generation, validation, and autocomplete.
 - **Backup & Verification**: Interactive `BackupSeedScreen` with tap-to-reveal, screenshot security warnings, and 3-word verification quiz.
 - **Restore UI**: `RestoreSeedScreen` with 12-word entry, live autocomplete suggestions, and checksum verification.
