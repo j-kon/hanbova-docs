@@ -557,10 +557,10 @@ Repository documentation reports automated test suites such as:
 
 ```text
 Rust backend:
-24 tests reported passing
+24 tests passing (CDK FFI, live escrow, core types, lightning, auth)
 
 Flutter:
-42 tests reported passing
+56 tests passing (financial authority, fail-closed claim/refund, NUT-04 quotes, P2PK derivation & escrow, BIP-39, auth widgets)
 ```
 
 Static analysis has also been reported green.
