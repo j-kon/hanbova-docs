@@ -76,9 +76,13 @@ When a sender creates a Protected Payment, the locked ecash token payload is enc
 
 ### 3.3 Official CDK C-FFI Bridge & Client Wallet Authority
 The mobile app communicates with the official Cashu Dev Kit (`cdk = "0.18.0-rc.0"`) through a lightweight C-ABI export layer (`crates/hanbova-cdk-ffi`):
-- **Functions Exported**: `hanbova_cdk_wallet_create`, `hanbova_cdk_wallet_get_balance`, `hanbova_cdk_mint_quote`, `hanbova_cdk_mint`, `hanbova_cdk_prepare_p2pk_send`, `hanbova_cdk_receive_p2pk`, `hanbova_cdk_check_token_state`, `hanbova_cdk_wallet_free`, `hanbova_cdk_free_string`, `hanbova_cdk_get_last_error`.
+- **Functions Exported (12/12)**: `hanbova_cdk_wallet_create`, `hanbova_cdk_wallet_get_balance`, `hanbova_cdk_mint_quote`, `hanbova_cdk_mint`, `hanbova_cdk_melt_quote`, `hanbova_cdk_melt`, `hanbova_cdk_prepare_p2pk_send`, `hanbova_cdk_receive_p2pk`, `hanbova_cdk_check_token_state`, `hanbova_cdk_wallet_free`, `hanbova_cdk_free_string`, `hanbova_cdk_get_last_error`.
 - **Database Storage**: Isolated `cdk-redb` storage per user and network (`{app_support}/wallets/{environment}/{userId}/wallet.redb`).
 - **P2PK Send Witness**: Sets recipient pubkey, sender refund pubkey, locktime, and `SigFlag::SigInputs` ensuring mathematical enforceability at the mint.
+
+### 3.4 Recovery & Limitation Disclaimer (Milestone 4 Partial)
+- **Deterministic Derivation**: BIP-39 mnemonic seed derives master wallet keys, primary Secp256k1 P2PK identity, and X25519 transport identity via domain-separated HMAC-SHA512.
+- **Limitation**: `createProtectedSend` generates fresh random refund keys per payment. Mnemonic-only restore recovers master identity keys, but pending un-refunded tokens or deleted local databases require full NUT-13 proof recovery and deterministic refund key schemes. Milestone 4 is strictly **Partial**.
 
 ---
 
@@ -143,12 +147,13 @@ The mobile app communicates with the official Cashu Dev Kit (`cdk = "0.18.0-rc.0
 
 📱 Flutter Mobile Client:
    - Command:  flutter test
-   - Result:   44 / 44 PASSED (100% Green)
+   - Result:   48 / 48 PASSED (100% Green)
    - Analyzer: 0 Issues (flutter analyze)
 
 📦 Native FFI Binaries:
    - Android:  libhanbova_cdk_ffi.so (arm64-v8a, x86_64 in jniLibs)
-   - iOS:      libhanbova_cdk_ffi.dylib / .a (aarch64-apple-darwin & ios-sim)
+   - iOS:      HanbovaCdkFfi.xcframework (aarch64-apple-ios, aarch64-apple-ios-sim, x86_64-apple-ios)
+               (Build via scripts/build_ios_ffi.sh prior to pod install)
 ======================================================================
 ```
 
@@ -157,7 +162,7 @@ The mobile app communicates with the official Cashu Dev Kit (`cdk = "0.18.0-rc.0
 ## 8. Fellowship Pitch Summary (3-Minute Script)
 
 1. **Introduction**: Introduce Hanbova and the African trust barrier in digital commerce.
-2. **Instant Lightning Demo**: Show sub-second BOLT11 invoice payment with haptic feedback.
+2. **Instant Lightning Demo**: Show sub-second BOLT11 invoice payment and NUT-05 ecash melting.
 3. **Protected Send Demo**: Send a 24-hour protected escrow to `@bob`. Show Bob receiving the notification, inspecting the locktime, and claiming the payment upon delivery.
 4. **Seed Backup & Security**: Demonstrate the 12-word BIP-39 backup flow with interactive verification quiz.
-5. **Conclusion**: Highlight open source deliverables, 68/68 passing tests, and mobile stabilization milestone readiness.
+5. **Conclusion**: Highlight open source deliverables, 72/72 passing tests across repos, zero compiler warnings, and mobile stabilization milestone readiness.
