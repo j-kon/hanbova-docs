@@ -45,9 +45,22 @@
 
 ---
 
+## Milestone 3B Highlights (Active Development 🚧)
+- **NUT-05 Lightning Melt Support**:
+  - Implemented `hanbova_cdk_melt_quote` and `hanbova_cdk_melt` in `crates/hanbova-cdk-ffi`.
+  - Exported all 12 C-FFI symbols across macOS dylib, Android JNI `.so`, and iOS universal `HanbovaCdkFfi.xcframework`.
+  - Implemented `createMeltQuote` and `payMeltQuote` in `CashuWalletService` returning typed `MeltQuoteResult` and `MeltExecutionResult`.
+  - Automated scenario tests passing in `client_wallet_authority_test.dart`.
+
+---
+
 ## Milestone 4 Partial Highlights
-- 2048-word BIP-39 English dictionary and `MnemonicService` for 12-word seed phrase generation, validation, and autocomplete.
-- Interactive `BackupSeedScreen` with tap-to-reveal, screenshot security warnings, and 3-word verification quiz.
-- `RestoreSeedScreen` with 12-word entry, live autocomplete suggestions, and checksum verification (full cross-device restore disabled pending auxiliary key derivation).
-- `BiometricService` wrapping platform Face ID, Touch ID, and hardware key security.
-- `MintsScreen` for multi-mint management, active mint switching, and live NUT-11 capability probe validation.
+- **Deterministic Key Hierarchy & Full Mnemonic Recovery**:
+  - Domain-separated HMAC-SHA512 derivation from BIP-39 mnemonic seed (`Hanbova P2PK Identity Derivation` & `Hanbova X25519 Transport Derivation`).
+  - Single 12-word mnemonic phrase fully recovers CDK wallet balance, secp256k1 P2PK identity, and X25519 transport identity on fresh installations.
+- **BIP-39 Mnemonic Lifecycle**: 2048-word BIP-39 English dictionary and `MnemonicService` for 12-word seed phrase generation, validation, and autocomplete.
+- **Backup & Verification**: Interactive `BackupSeedScreen` with tap-to-reveal, screenshot security warnings, and 3-word verification quiz.
+- **Restore UI**: `RestoreSeedScreen` with 12-word entry, live autocomplete suggestions, and checksum verification.
+- **Biometric Security**: `BiometricService` wrapping platform Face ID, Touch ID, and hardware key security.
+- **Multi-Mint Ready**: `MintsScreen` for multi-mint management, active mint switching, and live NUT-11 capability probe validation.
+

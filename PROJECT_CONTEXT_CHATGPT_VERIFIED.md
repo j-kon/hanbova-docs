@@ -176,19 +176,20 @@ The Hanbova backend is designed to store ciphertext, routing information, and pa
 
 ### Key Storage & Mnemonic Architecture
 
-In `CryptoIdentityService`, keys are stored directly in platform secure storage (`FlutterSecureStorage`):
-- `hanbova_${storagePrefix}_${userId}_transport_priv`: 32-byte X25519 transport private key
-- `hanbova_${storagePrefix}_${userId}_protected_priv`: 32-byte secp256k1 P2PK private key
+In `CryptoIdentityService`, keys are derived and stored in platform secure storage (`FlutterSecureStorage`):
+- `hanbova_${storagePrefix}_${userId}_transport_priv`: 32-byte X25519 transport private key (derived deterministically from BIP-39 seed)
+- `hanbova_${storagePrefix}_${userId}_protected_priv`: 32-byte secp256k1 P2PK private key (derived deterministically from BIP-39 seed)
 - `hanbova_${storagePrefix}_${userId}_mnemonic`: 12-word BIP-39 mnemonic
 
 The active BIP-39 mnemonic is converted to a 512-bit seed (`mnemonicToSeedHex`) and supplied to the CDK Rust FFI wallet (`hanbova_cdk_wallet_create`), which derives the master ecash wallet keyset.
 
-### Important Limitation
+### Deterministic Key Derivation (Milestone 4 Foundation)
 
-Because `protected_priv` (secp256k1) and `transport_priv` (X25519) are stored as separate keys in secure storage rather than derived hierarchically (e.g. via BIP-32 / SLIP-0010 paths) from the BIP-39 master seed:
-- Re-importing a mnemonic alone into a fresh installation restores the CDK wallet master seed and balance proofs, but **does not automatically recover previously generated P2PK claim/refund keys or the X25519 transport identity**.
-- Therefore, full cross-installation wallet recovery is explicitly marked disabled in current test builds (`Recovery is not available in this test build yet.`).
+`CryptoIdentityService` derives auxiliary keys deterministically from the 512-bit BIP-39 seed using domain separation:
+- **P2PK Identity (secp256k1)**: `HMAC-SHA512("Hanbova P2PK Identity Derivation", seed)`
+- **Transport Identity (X25519)**: `HMAC-SHA512("Hanbova X25519 Transport Derivation", seed)`
 
+This enables `restoreFromMnemonic(...)` to reconstruct the exact same P2PK and transport identities on a fresh installation from the user's 12-word BIP-39 mnemonic.
 
 ---
 
@@ -196,7 +197,7 @@ Because `protected_priv` (secp256k1) and `transport_priv` (X25519) are stored as
 
 Milestone 3A.2 replaced the previous fake Dart Cashu proof generator with a genuine Rust CDK bridge.
 
-The backend repository now contains:
+The backend repository contains:
 
 ```text
 crates/hanbova-cdk-ffi
@@ -209,15 +210,20 @@ cdk = 0.18.0-rc.0
 cdk-redb = 0.18.0-rc.0
 ```
 
-The current bridge calls official CDK wallet APIs for:
+The bridge exports 12 C-FFI functions calling official CDK wallet APIs for:
 
-- wallet creation
-- balance lookup
-- NUT-04 mint quote creation
-- minting
-- P2PK protected send
-- P2PK receive
-- proof-state checking
+- wallet creation (`hanbova_cdk_wallet_create`)
+- balance lookup (`hanbova_cdk_wallet_get_balance`)
+- NUT-04 mint quote creation (`hanbova_cdk_mint_quote`)
+- NUT-04 minting (`hanbova_cdk_mint`)
+- NUT-05 melt quote creation (`hanbova_cdk_melt_quote`)
+- NUT-05 melt execution (`hanbova_cdk_melt`)
+- NUT-11 P2PK protected send (`hanbova_cdk_prepare_p2pk_send`)
+- NUT-11 P2PK receive (`hanbova_cdk_receive_p2pk`)
+- NUT-07 proof-state checking (`hanbova_cdk_check_token_state`)
+- wallet teardown (`hanbova_cdk_wallet_free`)
+- error retrieval (`hanbova_cdk_get_last_error`)
+- string deallocation (`hanbova_cdk_free_string`)
 - wallet disposal
 
 The high-level path is:
