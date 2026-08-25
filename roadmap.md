@@ -29,7 +29,7 @@
   - Delivery failure resilience: relay failures preserve locked ecash in client secure storage, allowing non-duplicating retry and locktime refunds.
   - Recipient binding regression fix: dynamic input edits clear cached recipient keys and re-resolve new recipient keys deterministically.
 - **Payment Status Authority**: Documented backend states (`claimed`, `refunded`) as coordination metadata; true cryptographic spending authority resides strictly in the Cashu mint.
-- **Automated Verification**: 24/24 Rust backend workspace tests pass, 0 clippy warnings, `flutter analyze` 0 issues, 63/63 Flutter tests pass.
+- **Automated Verification**: 24/24 Rust backend workspace tests pass, 0 clippy warnings, `flutter analyze` 0 issues, 69/69 Flutter tests pass.
 
 ---
 
