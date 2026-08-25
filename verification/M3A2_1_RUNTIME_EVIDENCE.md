@@ -1,8 +1,8 @@
 # Milestone 3A.2.1: Mobile Integration & Safety Stabilization - Runtime Evidence
 
-**Date of Execution**: August 24, 2026  
+**Date of Execution**: August 25, 2026  
 **Test Suite Reference**: `crates/hanbova-protected-payments/src/cdk_test.rs`  
-**Test Framework**: Rust CDK Integration Test Suite (`cargo test --package hanbova-protected-payments`)  
+**Test Framework**: Two-Wallet CDK Integration Verification Suite (`cargo test --package hanbova-protected-payments`)  
 **Mint Environment**: Controlled local Cashu mint integration using test/mock Lightning settlement  
 **CDK Version**: `cdk 0.18.0-rc.0`  
 **Client Cryptographic Transport**: `X25519 + ChaCha20-Poly1305 AEAD`  
@@ -28,7 +28,9 @@
 
 ---
 
-## 2. Scenario A: Alice &rarr; Bob Protected Send & Claim Evidence
+## 2. Two-Wallet CDK Integration: Alice &rarr; Bob Protected Send & Claim
+
+> **Verification Classification**: This scenario validates the cryptographic protocol using two independent in-process CDK wallet engines. It is classified as **two-wallet CDK integration verification** (not two independent physical/emulated mobile devices).
 
 | Step / Metric | Type | Value / Runtime State |
 | :--- | :--- | :--- |
@@ -47,7 +49,7 @@
 
 ---
 
-## 3. Scenario B: Post-Locktime Refund & Late Claim Rejection Evidence
+## 3. Two-Wallet CDK Integration: Post-Locktime Refund & Late Claim Rejection
 
 | Step / Metric | Type | Value / Runtime State |
 | :--- | :--- | :--- |
@@ -64,27 +66,28 @@
 
 ---
 
-## 4. Payment Status Authority & State Reconcilation
+## 4. Payment Status Authority & State Reconciliation
 
 | Layer | Role & Authority |
 | :--- | :--- |
-| **Backend State (`claimed` / `refunded`)** | **Coordination Metadata Only**. Provides UI notification triggers and encrypted relay status. Backend status is non-authoritative. |
+| **Backend State (`created` &rarr; `protected` &rarr; `claimable` &rarr; `claimed` / `refunded`)** | **Coordination Metadata Only**. Provides UI notification triggers and encrypted relay status. Backend status is non-authoritative. Coordination sync failures do NOT invalidate CDK mint settlement. |
 | **Client ACK** | **Transport Confirmation Only**. Does NOT constitute cryptographic proof of settlement. |
 | **Cashu Mint Proof State (NUT-07)** | **Cryptographically Authoritative**. Proof spending status is validated on-mint via `hanbova_cdk_check_token_state`. If mint reports proofs spent, claim/refund is final. |
 
 ---
 
-## 5. Recovery Ground Truth Audit
+## 5. Recovery Ground Truth Audit (Status: `PARTIAL` ⚠️)
 
-| Identity / Component | Storage Mechanism | Recovery Status on Fresh Installation |
+| Identity / Component | Derivation / Storage Mechanism | Recovery Status on Fresh Installation |
 | :--- | :--- | :--- |
-| **BIP-39 Mnemonic** | `FlutterSecureStorage` (`hanbova_${prefix}_${userId}_mnemonic`) | Restorable via user entry of 12-word phrase. |
+| **BIP-39 Mnemonic** | 12-word English BIP-39 phrase | Primary user backup mechanism. |
 | **CDK Wallet Master Seed** | Derived via PBKDF2 (`mnemonicToSeedHex`) | Restored from mnemonic; generates master ecash seed. |
-| **Secp256k1 P2PK Private Key** | `FlutterSecureStorage` (`hanbova_${prefix}_${userId}_protected_priv`) | **NOT derived from mnemonic**; stored as independent key. Loss of secure storage wipes key unless exported. |
-| **X25519 Transport Key** | `FlutterSecureStorage` (`hanbova_${prefix}_${userId}_transport_priv`) | **NOT derived from mnemonic**; stored as independent key. |
-| **Local Proof Persistence** | Embedded Redb (`wallet.redb`) | Persists across app restarts. Wiped on fresh install. |
-| **Off-Device Proof Recovery (Wipe)** | NUT-13 Mint Restoration | **NOT VERIFIED / NOT IMPLEMENTED IN CURRENT BUILD**. |
-| **Fresh Install Recovery Status** | Safe UI Gate | **Recovery disabled in current test build** (`Recovery is not available in this test build yet.`). |
+| **Secp256k1 P2PK Primary Key** | Deterministically derived via HMAC-SHA512 (`Hanbova P2PK Identity Derivation`) | **Restored from mnemonic**. `restoreFromMnemonic` reconstructs the primary P2PK identity. |
+| **X25519 Transport Key** | Deterministically derived via HMAC-SHA512 (`Hanbova X25519 Transport Derivation`) | **Restored from mnemonic**. `restoreFromMnemonic` reconstructs the transport identity. |
+| **Local Proof Persistence** | Embedded Redb (`wallet.redb`) | **Persists across normal app restarts**. |
+| **Per-Payment Refund Keys** | Ephemeral random keys stored in local redb | **Recovery limitation**: Not derived from seed; total wipe of redb loses existing per-payment refund keys. |
+| **Off-Device Proof Recovery (Wipe)** | NUT-13 Mint Restoration | **Incomplete / Planned for future milestone**. |
+| **Overall Milestone 4 Status** | Roadmap Scope | **Strictly PARTIAL**. Full wallet balance recovery after fresh-install wipe is NOT claimed. |
 
 ---
 
@@ -94,5 +97,7 @@
 | :--- | :--- | :--- |
 | **Android ARM64 (`arm64-v8a`)** | **VERIFIED** | `libhanbova_cdk_ffi.so` (15.9 MB) packaged in `jniLibs/arm64-v8a/` and dynamically loaded via `DynamicLibrary.open('libhanbova_cdk_ffi.so')`. |
 | **Android x86_64 (`x86_64`)** | **VERIFIED** | `libhanbova_cdk_ffi.so` (16.3 MB) packaged in `jniLibs/x86_64/` and dynamically loaded. |
-| **iOS Simulator (`arm64` + `x86_64`)** | **VERIFIED** | Universal static framework `HanbovaCdkFfi.xcframework` linked into Runner. `nm -gU Runner.debug.dylib` confirms all 10 `hanbova_cdk_*` symbols resolved for `DynamicLibrary.process()`. |
+| **iOS Simulator (`arm64` + `x86_64`)** | **VERIFIED** | Universal static framework `HanbovaCdkFfi.xcframework` linked into Runner. `nm -gU Runner.debug.dylib` confirms all 12 `hanbova_cdk_*` symbols resolved for `DynamicLibrary.process()`. |
 | **iOS Physical Device (`aarch64-apple-ios`)** | **NOT VERIFIED** | Compiled static library (`libhanbova_cdk_ffi.a`, 62 MB) packaged into `HanbovaCdkFfi.xcframework` slice `ios-arm64`. Physical device runtime is **NOT VERIFIED** (no physical iPhone connected to test harness). |
+| **Two-Device Mobile Runtime (Alice &rarr; Bob)** | **NOT VERIFIED** | Full multi-device mobile runtime (Alice iOS/Android &rarr; backend relay &rarr; Bob iOS/Android) has not yet been executed on two simultaneous physical devices. Verification is currently **Two-Wallet CDK Integration Verification**. |
+
