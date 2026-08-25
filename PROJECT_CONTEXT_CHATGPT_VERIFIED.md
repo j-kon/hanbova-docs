@@ -560,7 +560,7 @@ Rust backend:
 24 tests passing (CDK FFI, live escrow, core types, lightning, auth)
 
 Flutter:
-56 tests passing (financial authority, fail-closed claim/refund, NUT-04 quotes, P2PK derivation & escrow, BIP-39, auth widgets)
+59 tests passing (canonical payment ID consistency, financial authority, fail-closed claim/refund, NUT-04 quotes, P2PK derivation & escrow, BIP-39, auth widgets)
 ```
 
 Static analysis has also been reported green.
