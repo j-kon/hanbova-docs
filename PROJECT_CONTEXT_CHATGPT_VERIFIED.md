@@ -183,13 +183,18 @@ In `CryptoIdentityService`, keys are derived and stored in platform secure stora
 
 The active BIP-39 mnemonic is converted to a 512-bit seed (`mnemonicToSeedHex`) and supplied to the CDK Rust FFI wallet (`hanbova_cdk_wallet_create`), which derives the master ecash wallet keyset.
 
-### Deterministic Key Derivation (Milestone 4 Foundation)
+### Deterministic Key Derivation & Recovery Limitations (Milestone 4 Partial)
 
 `CryptoIdentityService` derives auxiliary keys deterministically from the 512-bit BIP-39 seed using domain separation:
 - **P2PK Identity (secp256k1)**: `HMAC-SHA512("Hanbova P2PK Identity Derivation", seed)`
 - **Transport Identity (X25519)**: `HMAC-SHA512("Hanbova X25519 Transport Derivation", seed)`
 
-This enables `restoreFromMnemonic(...)` to reconstruct the exact same P2PK and transport identities on a fresh installation from the user's 12-word BIP-39 mnemonic.
+This enables `restoreFromMnemonic(...)` to reconstruct the exact same primary P2PK and transport identities on a fresh installation from the user's 12-word BIP-39 mnemonic.
+
+> [!WARNING]
+> **Recovery Limitation (Refund Keys & NUT-13)**:
+> In the current implementation, `createProtectedSend` generates a fresh refund keypair per payment within CDK.
+> Complete device loss / database wipe will restore the user's primary identity and CDK seed, but **pending un-refunded tokens with random per-payment refund keys** and **ecash proofs after local database deletion** require full NUT-13 proof restoration and deterministic per-payment refund key derivation, which is targeted for Milestone 4 completion. Milestone 4 is strictly **Partial**.
 
 ---
 
@@ -215,7 +220,7 @@ The bridge exports 12 C-FFI functions calling official CDK wallet APIs for:
 - wallet creation (`hanbova_cdk_wallet_create`)
 - balance lookup (`hanbova_cdk_wallet_get_balance`)
 - NUT-04 mint quote creation (`hanbova_cdk_mint_quote`)
-- NUT-04 minting (`hanbova_cdk_mint`)
+- NUT-04 minting (`hanbova_cdk_mint`) — *Note: `mintTestTokens` is a controlled local Cashu mint integration using test/mock Lightning settlement for testing, not a public/production Lightning funding flow.*
 - NUT-05 melt quote creation (`hanbova_cdk_melt_quote`)
 - NUT-05 melt execution (`hanbova_cdk_melt`)
 - NUT-11 P2PK protected send (`hanbova_cdk_prepare_p2pk_send`)
@@ -224,7 +229,13 @@ The bridge exports 12 C-FFI functions calling official CDK wallet APIs for:
 - wallet teardown (`hanbova_cdk_wallet_free`)
 - error retrieval (`hanbova_cdk_get_last_error`)
 - string deallocation (`hanbova_cdk_free_string`)
-- wallet disposal
+
+### iOS Build & Reproducibility
+
+For iOS integration:
+- `hanbova-app/scripts/build_ios_ffi.sh` builds static archives for physical device (`aarch64-apple-ios`) and simulator (`aarch64-apple-ios-sim`, `x86_64-apple-ios`) targets, bundles them with `lipo`, and creates `HanbovaCdkFfi.xcframework`.
+- `HanbovaCdkFfi.podspec` references `ios/Frameworks/HanbovaCdkFfi.xcframework` without machine-specific absolute paths.
+- **Fresh Clone Requirement**: A fresh clone requires running `scripts/build_ios_ffi.sh` once before running `pod install` in `hanbova-app/ios`.
 
 The high-level path is:
 
