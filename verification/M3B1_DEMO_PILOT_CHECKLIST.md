@@ -3,10 +3,10 @@
 **Target Protocol**: Cashu NUT-04 (Lightning Minting), NUT-10 & NUT-11 (P2PK Escrow & Refunds), X25519 Encrypted Relay  
 **Test Environments**:
 1. **Cashu Test Environment**: `https://testnut.cashu.space` (Zero monetary value)
-2. **Controlled Mainnet Pilot**: `https://mint.minibits.cash/Bitcoin` (Strictly limited: Max 10,000 sats deposit / Max 5,000 sats send)
+2. **Controlled Mainnet Pilot**: `https://mint.minibits.cash/Bitcoin` (Strictly limited: Max 10,000 sats wallet balance / Max 5,000 sats single send)
 
 > [!CAUTION]
-> **Safety Notice**: This is a **controlled small-value developer pilot**, NOT a public mainnet beta. Do not store large funds.
+> **Safety Notice**: This is a **controlled small-value developer pilot**, NOT a public mainnet beta. Do not fund with real Bitcoin or use real sats until all safety gates and review are complete.
 
 ---
 
@@ -14,25 +14,26 @@
 
 | Step | User Action | Verified Runtime Behavior |
 | :--- | :--- | :--- |
-| **1. Welcome Screen** | Tap "Create Account" | Navigates to `/signup`. Alternative "Restore Wallet" navigates to `/restore-seed`. |
+| **1. Welcome Screen** | Tap "Create Account" | Navigates to `/signup`. Direct "Restore Wallet" option navigates to `/restore-seed`. |
 | **2. Registration** | Enter username (e.g. `alice`), email, password | Authenticates with backend API (`POST /api/v1/auth/register`), saves session JWT. |
-| **3. Identity & Storage** | Automatic setup step | Generates 12-word BIP-39 mnemonic, derives deterministic P2PK (`secp256k1`) and X25519 transport keys, creates isolated Redb storage (`wallet.redb`), and registers public keys on backend (`PUT /api/v1/me/payment-keys`). |
-| **4. Backup Verification** | Review 12 words & complete 3-word verification quiz | Verifies words #3, #7, #11 before proceeding. Prevents proceeding without confirmed backup. |
-| **5. Device Security** | Toggle Biometric Unlock (Optional) | Configures Face ID / Touch ID hardware security prompt for transactions. |
-| **6. Mint Setup** | Confirm Active Mint | Probes mint capabilities (NUT-04, NUT-07, NUT-10, NUT-11). |
+| **3. Fail-Closed Init** | Automatic identity & wallet setup | Requires valid `AuthUser` (fails closed if unauthenticated). Generates 12-word BIP-39 mnemonic, derives deterministic P2PK (`secp256k1`) and X25519 transport keys, creates isolated Redb storage (`wallet.redb`), and registers public keys on backend directory (`PUT /api/v1/me/payment-keys`). Tracks explicit publication state (`Published` / `Sync Pending` with retry option). |
+| **4. Backup Verification** | Review 12 words & complete 3-word verification quiz | Explains seed safety: "Write these words down and keep them private." No clipboard copy. Verifies words #3, #7, #11 before proceeding. |
+| **5. Device Security** | Review Security Hardware | Displays truthful status: "Biometric Hardware Security: Planned • Milestone 4" without false active gating claims. |
+| **6. Mint Setup** | Probe Active Mint | Probes mint `/v1/info` capabilities (reachable, sat unit, NUT-04, NUT-07, NUT-10, NUT-11). Displays mint description/motd. Disables proceed if probe fails. |
 | **7. Add Bitcoin** | Tap "Deposit Bitcoin" or "Go to Home" | Initial wallet balance starts at **0 sats** (zero synthetic balances or demo transactions). |
 
 ---
 
-## 2. Genuine NUT-04 Lightning Deposit Verification
+## 2. Genuine NUT-04 Lightning Deposit & Status Polling
 
 | Step | Action | Runtime Evidence |
 | :--- | :--- | :--- |
-| **1. Request Mint Quote** | Enter amount (e.g. `1,000 sats`) in `UnifiedDepositSheet` | CDK calls mint's `/v1/mint/quote/bolt11`, returns authentic quote ID and Lightning BOLT11 invoice. |
-| **2. Display Invoice** | View QR code & copy invoice string | Real QR code rendered (`lnbc...`). Auto-polling timer starts (every 2.5s). |
-| **3. External Lightning Payment** | Pay invoice using external wallet (Phoenix, Strike, Cash App, Alby, or test mint hook) | Mint transitions quote state from `UNPAID` to `PAID`. |
-| **4. Auto-Mint Settlement** | CDK mints proofs upon payment confirmation | CDK executes `wallet.mint(quote_id)` to receive blinded signatures ($C$). Proofs stored in `wallet.redb`. |
-| **5. Balance Update** | Balance card refreshes | Spendable balance updates to `1,000 sats` in `cashuBalanceProvider`. |
+| **1. Request Mint Quote** | Enter amount (e.g. `1,000 sats`) in `UnifiedDepositSheet` | Enforces max wallet balance cap (`balance + amount <= 10,000 sats`). CDK calls mint `/v1/mint/quote/bolt11`, returns authentic quote ID and Lightning BOLT11 invoice. |
+| **2. Display Invoice** | View QR code & copy invoice string | Real QR code rendered (`lnbc...`). Auto-polling timer starts (every 2.5s) calling `checkMintQuoteStatus(quoteId)`. |
+| **3. Polling State** | Mint checks quote state without premature minting | Transitions through `UNPAID`. Polling does NOT call `wallet.mint()`. |
+| **4. External Lightning Payment** | Pay invoice using external wallet (Phoenix, Strike, Cash App, Alby, or test mint hook) | Mint transitions quote state from `UNPAID` to `PAID`. |
+| **5. Single Mint Settlement** | CDK mints proofs upon `PAID` confirmation | Once `checkMintQuoteStatus` returns `isPaid = true`, auto-polling cancels and CDK executes `wallet.mintQuote(quote_id)` **exactly once** under concurrency guard. Proofs stored in `wallet.redb`. |
+| **6. Balance Update** | Balance card refreshes | Spendable balance updates in `cashuBalanceProvider`. |
 
 ---
 
@@ -44,7 +45,7 @@
 
 | Sequence | Actor | Action & Verification |
 | :--- | :--- | :--- |
-| **1. Create Protected Send** | **Alice** | Enters `@bob`, `100 sats`, memo, and timelock. |
+| **1. Create Protected Send** | **Alice** | Enters `@bob`, `100 sats`, memo, and timelock. Provider strictly enforces `amountSats <= 5,000 sats` (pilot send cap). |
 | **2. Local Escrow Lock** | **Alice App** | CDK executes `createProtectedSend`, locking ecash proofs under `P2PK(BobPub, locktime, AliceRefundPub, SigFlag::SigInputs)`. |
 | **3. Encrypted Relay** | **Alice App** | Cashu token is encrypted with Bob's X25519 public key using ChaCha20-Poly1305 and relayed to backend. |
 | **4. Incoming Discovery** | **Bob** | Bob opens Protected tab &rarr; Incoming. Fetches encrypted message from backend. |
@@ -56,10 +57,15 @@
 
 ## 4. Real Refund Verification (Locktime Expiration Scenario)
 
+### Accurate NUT-11 Spending Semantics:
+- **Before locktime**: Recipient spending path is valid.
+- **After locktime**: Recipient spending path remains valid; sender refund path ALSO becomes valid.
+- **Settlement Rule**: **First valid mint spend wins.** There is never an "automatic refund".
+
 | Sequence | Actor | Action & Verification |
 | :--- | :--- | :--- |
 | **1. Short Locktime Send** | **Alice** | Alice sends `100 sats` to `@bob` with **30-second** dev locktime. |
-| **2. Unclaimed Wait** | **Alice & Bob** | Bob does not claim the payment. |
+| **2. Unclaimed Wait** | **Alice & Bob** | Bob does not claim the payment during the protection window. |
 | **3. Expiration Trigger** | **Alice App** | After 30 seconds, UI badge updates to **"Locktime expired • Refund available"**. |
 | **4. Self-Service Refund** | **Alice** | Alice taps **Refund**. CDK signs with `AliceRefundPriv` and submits proofs to mint for refund swap. |
 | **5. Balance Restored** | **Alice App** | Alice balance is restored to spendable redb proofs. Backend status transitions to `refunded`. |
@@ -72,10 +78,13 @@
 | Parameter | Controlled Pilot Rule | Enforcement Location |
 | :--- | :--- | :--- |
 | **Activation Flag** | `--dart-define=MAINNET_DEMO_PILOT=true` or Developer Options opt-in | `NetworkConfig.isMainnetPilotBuild` / `mainnetPilotOverrideProvider` |
-| **Max Deposit Cap** | `10,000 sats` (~$6.00 USD) | `UnifiedDepositSheet` (`amount > config.maxDepositSats`) |
-| **Max Send Cap** | `5,000 sats` (~$3.00 USD) | `ProtectedSendScreen` (`amountSats > config.maxSendSats`) |
-| **Allowlisted Mint** | `https://mint.minibits.cash/Bitcoin` | `NetworkConfig.mainnetPilot.defaultMintUrl` |
-| **Safety Warning** | Prominent Amber/Red Warning Banner on Home & Protected Screens | `HomeScreen`, `ProtectedScreen`, `MainnetSafetyDialog` |
+| **Active Config Provider** | `activeNetworkConfigProvider` centralizes pilot state | `network_environment.dart` |
+| **Allowlisted Mint** | `https://mint.minibits.cash/Bitcoin` | `cashuWalletServiceProvider` (strictly forces allowlist mint, ignores custom selected mints) |
+| **Mint Screen Restrictions** | Adding custom mints & switching mints disabled | `MintsScreen` |
+| **Max Wallet Balance Cap** | `10,000 sats` | `UnifiedDepositSheet` (`balance + amount > config.maxWalletBalanceSats`) |
+| **Max Single Send Cap** | `5,000 sats` | `ProtectedSendNotifier` & `SendScreen` (NUT-05 melt) |
+| **Token Import Gate** | Arbitrary Cashu token import disabled in pilot | `UnifiedDepositSheet._claimCashuToken` |
+| **Safety Warning** | Prominent Warning Badge on Home & Protected Screens | `HomeScreen`, `ProtectedScreen`, `MainnetSafetyDialog` |
 | **Standard Builds** | Mainnet remains strictly locked (`isEnabled = false`) | `NetworkConfig.mainnetLocked` |
 
 ---
