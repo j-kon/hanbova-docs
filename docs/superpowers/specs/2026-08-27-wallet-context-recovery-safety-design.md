@@ -1,6 +1,6 @@
 # Wallet Context and Recovery Safety Design
 
-**Status:** Written specification approved on 2026-08-27
+**Status:** Implemented and verified on 2026-08-28
 
 **Parent design:** `docs/superpowers/specs/2026-08-27-release-hardening-design.md`
 
