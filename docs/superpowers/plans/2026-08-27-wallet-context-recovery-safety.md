@@ -352,6 +352,7 @@ test('late identity result cannot reactivate a previous account', () async {
 
   await expectLater(operation, throwsA(isA<StaleWalletContextException>()));
   expect(container.read(cryptoIdentityProvider).valueOrNull, isNull);
+  expect(store.writes.containsKey(bobContext), isFalse);
 });
 ```
 
@@ -370,10 +371,26 @@ final class StaleWalletContextException implements Exception {}
 
 class WalletCryptoIdentity {
   final WalletContextKey context;
+  final String protectedPaymentPubkey;
+  final String transportEncryptionPubkey;
+  final SimpleKeyPair transportKeyPair;
+  final String protectedPaymentPrivkeyHex;
+  final String mnemonic;
+  final String walletSeedHex;
+
   String get userId => context.userId;
   HanbovaNetwork get network => context.network;
   String get storagePrefix => context.storagePrefix;
-  // Keep the existing public/private key, mnemonic, seed, and key-pair fields.
+
+  const WalletCryptoIdentity({
+    required this.context,
+    required this.protectedPaymentPubkey,
+    required this.transportEncryptionPubkey,
+    required this.transportKeyPair,
+    required this.protectedPaymentPrivkeyHex,
+    required this.mnemonic,
+    required this.walletSeedHex,
+  });
 }
 
 class CryptoIdentityNotifier extends AsyncNotifier<WalletCryptoIdentity?> {
@@ -433,7 +450,7 @@ git -C hanbova-app commit -m "fix: bind crypto identity to wallet context"
 
 **Interfaces:**
 - Consumes: `activeWalletContextKeyProvider`, context-bearing `WalletCryptoIdentity`, `activeNetworkConfigProvider`.
-- Produces: a nullable `cashuWalletServiceProvider` that constructs CDK only for an exact identity/context match; consumers use `getOrCreateIdentity()` only during setup and `requireIdentity()` everywhere else.
+- Produces: `CashuWalletServiceFactory`, `cashuWalletServiceFactoryProvider`, and a nullable `cashuWalletServiceProvider` that constructs CDK only for an exact identity/context match; consumers use `getOrCreateIdentity()` only during setup and `requireIdentity()` everywhere else.
 
 - [ ] **Step 1: Write failing mismatch tests**
 
@@ -455,6 +472,24 @@ test('Cashu provider stays unavailable across mainnet storage prefixes', () asyn
   addTearDown(container.dispose);
   expect(container.read(cashuWalletServiceProvider), isNull);
 });
+
+test('account switch disposes the prior Cashu service immediately', () async {
+  final factory = RecordingCashuWalletServiceFactory();
+  final container = walletContainer(
+    activeContext: aliceContext,
+    identity: await identityFor(aliceContext),
+    factory: factory,
+  );
+  addTearDown(container.dispose);
+
+  final first = container.read(cashuWalletServiceProvider)
+      as RecordingCashuWalletService;
+  container.read(activeContextStateProvider.notifier).state = bobContext;
+  await container.pump();
+
+  expect(first.wasDisposed, isTrue);
+  expect(container.read(cashuWalletServiceProvider), isNull);
+});
 ```
 
 Update `MockCryptoIdentityNotifier` so `getOrCreateIdentity()` and `requireIdentity()` take no account/network arguments and its fixture carries `WalletContextKey`.
@@ -468,6 +503,32 @@ Expected: the mismatch tests fail against the non-null-only provider guard, and 
 - [ ] **Step 3: Add the exact provider guard and migrate callers**
 
 ```dart
+typedef CashuWalletServiceFactory = CashuWalletService Function({
+  required WalletContextKey context,
+  required WalletCryptoIdentity identity,
+  required String mintUrl,
+  required CashuWalletStorage storage,
+});
+
+final cashuWalletServiceFactoryProvider = Provider<CashuWalletServiceFactory>(
+  (ref) => ({
+    required context,
+    required identity,
+    required mintUrl,
+    required storage,
+  }) =>
+      CdkCashuWalletServiceImpl(
+        userId: context.userId,
+        network: context.network,
+        walletSeedHex: identity.walletSeedHex,
+        p2pkPrivateKeyHex: identity.protectedPaymentPrivkeyHex,
+        p2pkPublicKeyHex: identity.protectedPaymentPubkey,
+        storagePrefix: context.storagePrefix,
+        mintUrl: mintUrl,
+        storage: storage,
+      ),
+);
+
 final cashuWalletServiceProvider = Provider<CashuWalletService?>((ref) {
   final context = ref.watch(activeWalletContextKeyProvider);
   final identity = ref.watch(cryptoIdentityProvider).valueOrNull;
@@ -486,13 +547,9 @@ final cashuWalletServiceProvider = Provider<CashuWalletService?>((ref) {
   final mintUrl = config.isPilot
       ? config.defaultMintUrl
       : (selectedMint ?? config.defaultMintUrl);
-  final service = CdkCashuWalletServiceImpl(
-    userId: context.userId,
-    network: context.network,
-    walletSeedHex: identity.walletSeedHex,
-    p2pkPrivateKeyHex: identity.protectedPaymentPrivkeyHex,
-    p2pkPublicKeyHex: identity.protectedPaymentPubkey,
-    storagePrefix: context.storagePrefix,
+  final service = ref.watch(cashuWalletServiceFactoryProvider)(
+    context: context,
+    identity: identity,
     mintUrl: mintUrl,
     storage: ref.watch(cashuWalletStorageProvider),
   );
@@ -512,9 +569,12 @@ Expected: PASS. Confirm `git diff -- lib/features/protected/presentation/protect
 - [ ] **Step 5: Commit only the planned app changes**
 
 ```bash
-git -C hanbova-app add lib/core/cashu/cashu_wallet_provider.dart lib/features/auth/screens/wallet_setup_screen.dart lib/features/home/presentation/home_screen.dart lib/features/protected_send/presentation/protected_send_provider.dart lib/features/protected_send/presentation/claim_payment_screen.dart lib/features/protected/presentation/protected_screen.dart test/auth_widget_test.dart test/financial_authority_test.dart test/cashu_wallet_context_test.dart
+git -C hanbova-app add lib/core/cashu/cashu_wallet_provider.dart lib/features/auth/screens/wallet_setup_screen.dart lib/features/home/presentation/home_screen.dart lib/features/protected_send/presentation/protected_send_provider.dart lib/features/protected_send/presentation/claim_payment_screen.dart test/auth_widget_test.dart test/financial_authority_test.dart test/cashu_wallet_context_test.dart
+git -C hanbova-app add -p lib/features/protected/presentation/protected_screen.dart
 git -C hanbova-app commit -m "fix: reject mismatched wallet services"
 ```
+
+At the interactive staging prompt, stage only the `getOrCreateIdentity(...)` to `requireIdentity()` hunk. Answer `n` for the pre-existing Claim-button `minimumSize: Size(72, 36)` hunk so the user's change remains unstaged and uncommitted.
 
 ### Task 5: Make operating-system authentication fail closed
 
@@ -728,7 +788,12 @@ final class WalletBackupStatusNotifier extends AsyncNotifier<bool> {
 }
 ```
 
-Backup calls `requireIdentity()` and never imports or calls `MnemonicService.generateMnemonic`. Add explicit loading/unavailable/error states. On failed authentication, keep `_isRevealed` false and show the fixed safe message. Make quiz verification asynchronous and await `walletBackupStatusProvider.notifier.confirm()` before success. Wallet setup also awaits `confirm()` after its word quiz succeeds. Profile reads `ref.watch(walletBackupStatusProvider).valueOrNull ?? false` and may show a loading indicator while the value loads.
+Backup calls `requireIdentity()` and never imports or calls `MnemonicService.generateMnemonic`. Add explicit loading/unavailable/error states. On failed authentication, keep `_isRevealed` false and show the fixed safe message. Make quiz verification asynchronous and await `walletBackupStatusProvider.notifier.confirm()` before success. Wallet setup also awaits `confirm()` after its word quiz succeeds. Profile uses the following deterministic presentation rule, treating loading/error as not confirmed:
+
+```dart
+final isBackedUp =
+    ref.watch(walletBackupStatusProvider).valueOrNull ?? false;
+```
 
 - [ ] **Step 4: Run backup, setup, profile, and safety tests**
 
@@ -794,6 +859,27 @@ test('wallet rebuild failure does not report success', () async {
   );
 });
 
+test('context change during restore blocks success and confirmation', () async {
+  final controller = restoreController(changeContextDuringRestore: true);
+  await expectLater(
+    controller.restore(validMnemonic),
+    throwsA(isA<RestoreWalletFailure>().having(
+      (failure) => failure.code,
+      'code',
+      'session_changed',
+    )),
+  );
+  expect(fakeBackupStore.confirmedContexts, isEmpty);
+});
+
+test('retry rereads the current identity and clears a transient sync failure', () async {
+  final controller = restoreController(publicationFailuresBeforeSuccess: 1);
+  final result = await controller.restore(validMnemonic);
+  expect(result.outcome, RestoreWalletOutcome.syncPending);
+  expect(await controller.retryPublicKeySync(), isTrue);
+  expect(fakeCrypto.requireIdentityCalls, 1);
+});
+
 testWidgets('welcome restore action sends the user through sign in', (tester) async {
   await tester.pumpWidget(routerApp(initialLocation: '/welcome'));
   await tester.tap(find.text('Sign in to restore with phrase'));
@@ -807,6 +893,22 @@ testWidgets('restore form is absent without an authenticated context', (tester) 
   await tester.pumpAndSettle();
   expect(find.text('Sign in to restore your wallet'), findsOneWidget);
   expect(find.byType(TextField), findsNothing);
+});
+
+testWidgets('restore requires explicit replacement confirmation', (tester) async {
+  await tester.pumpWidget(restoreScreenApp(activeContext: aliceContext));
+  await enterValidMnemonic(tester);
+  await tester.tap(find.text('Restore Wallet'));
+  await tester.pumpAndSettle();
+  expect(
+    find.text(
+      'This replaces the wallet identity for the signed-in account in this wallet environment.',
+    ),
+    findsOneWidget,
+  );
+  await tester.tap(find.text('Cancel'));
+  await tester.pumpAndSettle();
+  expect(fakeRestoreController.restoreCalls, 0);
 });
 ```
 
@@ -993,7 +1095,7 @@ Run: `git -C hanbova-app diff --check`
 
 Expected: no whitespace errors.
 
-Run: `git -C hanbova-app diff --stat HEAD~7..HEAD`
+Run: `git -C hanbova-app diff --stat d97adac..HEAD`
 
 Expected: changes are limited to the wallet-context, identity, backup/restore, auth-intent, tests, and one analyzer cleanup described by this plan.
 
