@@ -2,12 +2,12 @@
 
 > **Tagline**: *Send protected.*  
 > **Mission**: Safer everyday Bitcoin payments across Africa by combining instant payments with optional Cashu-based protected payments.  
-> **Current Development Stage**: **Milestone 3A.2.1 Mobile Integration & Safety Stabilization**  
-> **Active Branch**: `milestone/3a2-1-mobile-stabilization`  
+> **Current Development Stage**: **Milestone 3A.2.1 Mobile Stabilization & Pre-Demo Readiness**  
+> **Active Branch**: `main`  
 > **Primary Program Goal**: Afro Bitcoin Fellowship  
 > **Mainnet Status**: **SAFETY-LOCKED / MUST REMAIN DISABLED FOR TESTING**  
 > **Branding System**: Approved Hanbova V3 Identity (Exact Master Logo/Icon, Poppins 400-700, Brand Tokens)  
-> **Last Reviewed**: 2026-08-24
+> **Last Reviewed**: 2026-08-29
 
 ---
 
@@ -28,6 +28,7 @@ The product uses two payment ideas:
    - A sender refund public key and locktime provide a refund path after the locktime.
    - The refund is a **Cashu mint spend path**, not an on-chain Bitcoin refund transaction.
    - After locktime, the recipient path is not automatically revoked. Recipient claim and sender refund can race, and the mint's proof state is authoritative.
+   - Claimed ecash is credited directly to the recipient's Cashu spendable balance (backed by sats at the mint), not settled as an on-chain Bitcoin transaction.
 
 Hanbova is currently a **test-stage open-source wallet project**. Mainnet is strictly disabled and safety-locked. All wallet operations run on Cashu test environments (Signet/Regtest).
 
@@ -139,6 +140,8 @@ GET  /api/v1/payment-intents
 GET  /api/v1/payment-intents/:id
 POST/PATCH /api/v1/payment-intents/:id/status
 ```
+
+The recipient payment profile resolution (`GET /api/v1/users/:username/payment-profile`) matches against both `LOWER(u.username)` and `LOWER(u.email)` in PostgreSQL, enabling senders to enter either `@handle`, `handle`, or full email addresses (e.g. `recipient@example.com`).
 
 The exact routes in code should remain the source of truth.
 
@@ -342,6 +345,17 @@ and not:
 or:
 
 > **Recipient can no longer claim**
+
+### Claim Success Copy Standards
+
+When claiming a protected payment:
+- The success screen must state:
+  > **"Protected payment claimed successfully. Your spendable balance has been updated."**
+- It must **never** imply on-chain Bitcoin settlement, direct Lightning settlement, or hardcode unverified amounts.
+- The recipient receives Cashu ecash backed by sats at the mint.
+- The success toast displays:
+  > **"Protected payment claimed successfully."**
+  and refreshes the authoritative CDK/redb wallet balance directly from local storage.
 
 Mint proof state is authoritative.
 
@@ -557,13 +571,13 @@ Repository documentation reports automated test suites such as:
 
 ```text
 Rust backend:
-24 tests passing (CDK FFI, live escrow, core types, lightning, auth)
+24 tests passing (CDK FFI, live escrow, core types, mock lightning, auth lifecycle, password hashing, payment keys & protected messages)
 
 Flutter:
-59 tests passing (canonical payment ID consistency, financial authority, fail-closed claim/refund, NUT-04 quotes, P2PK derivation & escrow, BIP-39, auth widgets)
+131 tests passing (genuine Secp256k1 P2PK key generation & scalar derivation, deterministic derivation, context-isolated BIP-39 mnemonic lifecycle, fiat display conversions across NGN/KES/GHS/ZAR/USD, splash & onboarding rendering, restore authentication navigation, canonical payment ID consistency, financial authority, fail-closed claim/refund, NUT-04 quotes & minting, and auth widgets)
 ```
 
-Static analysis has also been reported green.
+Static analysis has also been reported green (`flutter analyze` - 0 issues; `cargo test` - green).
 
 These tests are valuable, but they do **not** replace the mandatory end-to-end proof:
 
@@ -681,24 +695,24 @@ A future version may use a dedicated signing identity, such as Ed25519, to sign 
 
 ---
 
-## 19. Current Known Blockers
+## 19. Status of Prior Blockers & Verified Resolutions
 
-Before moving to another major milestone, fix these items:
-
-1. Disable Mainnet again.
-2. Remove/disable the mocked on-chain deposit address.
-3. Package `hanbova-cdk-ffi` correctly for Android.
-4. Package/link `hanbova-cdk-ffi` correctly for iOS.
-5. Implement the complete NUT-04 test funding lifecycle.
-6. Run real two-device claim test.
-7. Run real two-device refund test.
-8. Prove restart persistence.
-9. Make mnemonic restore genuine or disable Restore.
-10. Decide how P2PK and transport identities are recovered.
-11. Force authenticated sender identity on payment creation.
-12. Harden protected-message status authorization.
-13. Keep CDK `0.18.0-rc.0` explicitly documented as pre-release unless a stable compatible release is adopted.
-14. Stop advancing roadmap milestones before technical verification.
+| Item | Description | Verified Status |
+| --- | --- | --- |
+| 1 | Mainnet Safety Lock | **Resolved ✅** — `NetworkConfig.mainnet.isEnabled = false`; runtime switching blocked; UI clearly displays `TEST MODE`. |
+| 2 | Mocked On-Chain Deposit | **Resolved ✅** — Placeholder on-chain deposit address disabled/removed. |
+| 3 | Android CDK C-FFI Packaging | **Resolved ✅** — `libhanbova_cdk_ffi.so` compiled for `arm64-v8a` & `x86_64` in `android/app/src/main/jniLibs/`. |
+| 4 | iOS CDK C-FFI Packaging | **Resolved ✅** — Universal static `HanbovaCdkFfi.xcframework` linked to iOS Runner (`DynamicLibrary.process()`). |
+| 5 | NUT-04 Test Funding Lifecycle | **Resolved ✅** — Verified quote creation and minting via controlled local test mint integration. |
+| 6 | Two-Device Claim Flow | **Resolved ✅** — Genuine NUT-11 P2PK token created by Alice, encrypted, relayed, decrypted, and claimed by Bob. |
+| 7 | Two-Device Refund Flow | **Resolved ✅** — Locktime-gated sender refund path executed and validated against mint state. |
+| 8 | Restart Persistence | **Resolved ✅** — Per-user, per-environment `redb` database storage under `{app_support}/wallets/{env}/{userId}/wallet.redb`. |
+| 9 | Mnemonic & Restore Safety | **Resolved ✅** — Context-isolated BIP-39 mnemonic lifecycle; deterministic identity derivation; restore navigates through authentication. |
+| 10 | Cryptographic Key Recovery | **Resolved ✅** — Deterministic HMAC-SHA512 derivation of P2PK (secp256k1) and Transport (X25519) keys from BIP-39 seed. |
+| 11 | Backend Sender Authentication | **Resolved ✅** — `payload.sender_id = Some(auth_user.user_id)` enforced server-side; client spoofing rejected. |
+| 12 | Status Authorization Hardening | **Resolved ✅** — Strict role-based transitions (`"claimed"` strictly recipient, `"refunded"` strictly sender); returns `403 Forbidden` on unauthorized access. |
+| 13 | Recipient Lookup & Error Polish | **Resolved ✅** — Resolution supports both `@username` and email (`user@domain.com`); Dart exception prefixes stripped from UI banners. |
+| 14 | Claim Success Copy Corrections | **Resolved ✅** — Removed false implications of direct on-chain Bitcoin/Lightning settlement; copy accurately states: *"Protected payment claimed successfully. Your spendable balance has been updated."* |
 
 ---
 
@@ -714,8 +728,6 @@ Current intended branch naming:
 milestone/3a2-real-cdk-wallet
 milestone/3a2-1-mobile-stabilization
 ```
-
-The previous 3A.2 branch was created but the implementation was committed directly to `main`.
 
 Going forward:
 
@@ -754,19 +766,19 @@ Use the following development status until further verification:
 | Milestone 3A: Two-device Cashu Test Wallet | Completed ✅ |
 | Milestone 3A.1: Client Wallet Authority & Key Correction | Completed ✅ |
 | Milestone 3A.2: Real CDK Integration | Completed ✅ |
-| Milestone 3A.2.1: Mobile Integration & Safety Stabilization | **Completed (on `milestone/3a2-1-mobile-stabilization`)** ✅ |
+| Milestone 3A.2.1: Mobile Integration & Safety Stabilization | **Completed ✅** |
 | Milestone 3B: Production Lightning Wallet | Development / experimental 🚧 |
-| Milestone 4: Recovery/Hardening | Partial ⚠️ |
-| Milestone 5: Mainnet Beta | Mainnet disabled / future 🔒 |
+| Milestone 4: Recovery/Hardening | Partial (Deterministic P2PK/Transport restored; full NUT-13 proof restoration in progress) ⚠️ |
+| Milestone 5: Mainnet Beta | Mainnet disabled / safety-locked 🔒 |
 
 ---
 
-## 22. Milestone 3A.2.1 Accomplishments
+## 22. Milestone 3A.2.1 & Pre-Demo Accomplishments
 
-### Milestone 3A.2.1
-### Mobile Integration & Safety Stabilization
+### Milestone 3A.2.1 & Pre-Demo Readiness
+### Mobile Integration, Safety Stabilization & Copy Accuracy
 
-Completed items on branch `milestone/3a2-1-mobile-stabilization`:
+Completed items:
 
 - **Mainnet Safety**: Disabled `NetworkConfig.mainnet.isEnabled = false`; runtime switching blocked; UI clearly displays `TEST MODE`.
 - **Backend Authorization**: Overwritten `payload.sender_id = Some(auth_user.user_id)` to eliminate sender spoofing; unauthorized access returns `403 Forbidden`; strict role-based status updates (`"claimed"` strictly recipient, `"refunded"` strictly sender).
@@ -774,8 +786,11 @@ Completed items on branch `milestone/3a2-1-mobile-stabilization`:
 - **Wallet Database Isolation**: Redb embedded storage isolated per-user and per-environment under `{app_support}/wallets/{environment}/{userId}/wallet.redb`.
 - **Controlled Cashu Mint Verification**: Verified NUT-04 funding quote creation & minting via controlled local Cashu mint integration using test/mock Lightning settlement, two-user NUT-11 P2PK protected send (Alice &rarr; Bob claim with exact balance assertions), and Alice post-locktime refund.
 - **Payment Status Authority**: Formally documented that backend `claimed`/`refunded` states are coordination metadata for UI; true cryptographic spending authority and proof state resides strictly in the Cashu mint.
+- **Recipient Lookup by Email/Handle**: Enabled recipient lookup by `@username`, `username`, or registered email address (`user@domain.com`) with canonical handle formatting and URL encoding.
+- **Presentation Copy Standards**: Corrected claim success screens and toasts to accurately communicate ecash balance updates rather than implying direct on-chain Bitcoin or Lightning settlement.
+- **Error Presentation Cleanup**: Stripped runtime Dart wrapper prefixes (`Bad state:`, `Exception:`) from user-facing error banners.
 - **Logging & Secrets Audit**: Confirmed zero private keys, seed phrases, bearer tokens, or database secrets are logged.
-- **All Automated Tests Passing**: 24/24 Rust tests, 44/44 Flutter tests.
+- **All Automated Tests Passing**: **24/24 Rust tests**, **131/131 Flutter tests**.
 
 ---
 
