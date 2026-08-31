@@ -766,7 +766,8 @@ Use the following development status until further verification:
 | Milestone 3A: Two-device Cashu Test Wallet | Completed ✅ |
 | Milestone 3A.1: Client Wallet Authority & Key Correction | Completed ✅ |
 | Milestone 3A.2: Real CDK Integration | Completed ✅ |
-| Milestone 3A.2.1: Mobile Integration & Safety Stabilization | **Completed ✅** |
+| Milestone 3A.2.1: Mobile Integration & Safety Stabilization | Completed ✅ |
+| Milestone 3A.3: Functional Hardening & Daily-Use Reliability | **Completed ✅** |
 | Milestone 3B: Production Lightning Wallet | Development / experimental 🚧 |
 | Milestone 4: Recovery/Hardening | Partial (Deterministic P2PK/Transport restored; full NUT-13 proof restoration in progress) ⚠️ |
 | Milestone 5: Mainnet Beta | Mainnet disabled / safety-locked 🔒 |
@@ -794,7 +795,23 @@ Completed items:
 
 ---
 
-## 23. Fellowship-Safe Project Description
+## 23. Milestone 3A.3 Accomplishments
+
+### Functional Hardening & Daily-Use Reliability (Active Branch: `milestone/3a3-functional-hardening`)
+
+Completed items:
+
+- **Single Financial Source of Truth**: Enforced native CDK redb embedded storage (`CashuWalletService.getBalance()`) and Cashu mint proof state as the sole financial source of truth. Purged synthetic balance fallbacks and demo seeders (`seedDemoTransactions()`).
+- **Three-Tier State Architecture & Reconciliation**: Explicitly separated Financial State (`Spendable`, `Locked Escrow`, `Claimed`, `Refunded`), Delivery State (`Delivered`, `Delivery Pending`), and Coordination State (`Synchronized`, `Coordination Sync Pending`). Local settled states (`completed`, `refunded`) are preserved against stale backend coordination status.
+- **Client Authority Resilience**: When CDK operations succeed but backend synchronization fails, transactions transition to `coordinationSyncPending`. Delivery drops preserve escrow and enable deduplicated retry without creating redundant ecash.
+- **Double-Tap & Concurrency Safety**: All financial trigger actions (Protected Send, Add Bitcoin quote minting, Claim, Refund, Instant Send) feature loading state flags and disabled handlers during execution.
+- **Consumer Error Translation**: Built `ConsumerErrorTranslator` to strip internal runtime wrapper prefixes and map errors to clear consumer-friendly messages (*"Mint unreachable"*, *"Payment already claimed or refunded"*, *"Recipient wallet identity changed"*, *"Insufficient spendable balance"*), while automatically redacting hex secrets $\ge 32$ characters and local filesystem URIs.
+- **Truthful Recovery Scope**: Updated `RestoreSeedScreen` to truthfully inform users that mnemonic restoration recovers signing keys and account identity, whereas off-device ecash proof recovery requires local database backup until server-assisted proof restoration (NUT-13) is supported.
+- **All Automated Tests Passing**: **24/24 Rust tests**, **146/146 Flutter tests**, **0 analyzer issues**, clean Android debug APK and iOS simulator builds.
+
+---
+
+## 24. Fellowship-Safe Project Description
 
 Use this wording when describing Hanbova today:
 
@@ -812,7 +829,7 @@ Avoid saying:
 
 ---
 
-## 24. Fellowship Demo Goal
+## 25. Fellowship Demo Goal
 
 The strongest demo is not a long feature tour.
 
@@ -856,7 +873,7 @@ This should be shown using genuine valueless Cashu proofs, not local simulation.
 
 ---
 
-## 25. Final Engineering Principle
+## 26. Final Engineering Principle
 
 Every Hanbova feature should answer three questions:
 
