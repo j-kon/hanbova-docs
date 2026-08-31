@@ -766,8 +766,7 @@ Use the following development status until further verification:
 | Milestone 3A: Two-device Cashu Test Wallet | Completed ✅ |
 | Milestone 3A.1: Client Wallet Authority & Key Correction | Completed ✅ |
 | Milestone 3A.2: Real CDK Integration | Completed ✅ |
-| Milestone 3A.2.1: Mobile Integration & Safety Stabilization | Completed ✅ |
-| Milestone 3A.3: Functional Hardening & Daily-Use Reliability | **Completed ✅** |
+| **Milestone 3A.3: Functional Hardening & Daily-Use Reliability** | **Implemented / Runtime verification pending ⏳** |
 | Milestone 3B: Production Lightning Wallet | Development / experimental 🚧 |
 | Milestone 4: Recovery/Hardening | Partial (Deterministic P2PK/Transport restored; full NUT-13 proof restoration in progress) ⚠️ |
 | Milestone 5: Mainnet Beta | Mainnet disabled / safety-locked 🔒 |

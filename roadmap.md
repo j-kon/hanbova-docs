@@ -11,7 +11,7 @@
 | **Milestone 3A.1** | Security Correction: Move Cashu Wallet Authority to Client & Genuine Secp256k1 | `COMPLETED` ✅ |
 | **Milestone 3A.2** | Real CDK Client Wallet Integration via Thin Rust C-FFI Bridge & Zero-Custody Backend Hardening | `COMPLETED` ✅ |
 | **Milestone 3A.2.1** | Mobile Integration & Safety Stabilization (Android NDK / iOS FFI, Mainnet Lock, Authorization 403) | `COMPLETED` ✅ |
-| **Milestone 3A.3** | Functional Hardening & Daily-Use Reliability (Single Financial Source of Truth, State Reconciliation, Double-Tap Guards, Honest Recovery) | `COMPLETED` ✅ |
+| **Milestone 3A.3** | Functional Hardening & Daily-Use Reliability (Single Financial Source of Truth, State Reconciliation, Double-Tap Guards, Honest Recovery) | `IMPLEMENTED / RUNTIME VERIFICATION PENDING` ⏳ |
 | **Milestone 3B.1** | Real User Onboarding + Controlled Mainnet Demo Pilot (NUT-04 Auto-Polling, Step-by-Step Onboarding, Pilot Limits) | `COMPLETED` ✅ (on `milestone/3b1-real-onboarding-mainnet-pilot`) |
 | **Milestone 3B** | Lightning Integration & Ecash Swaps (NUT-04/NUT-05) | `Development / experimental` 🚧 |
 | **Milestone 4** | Production Hardening, BIP-39 Backup, Biometrics & Multi-Mint | `Partial` ⚠️ |
@@ -19,7 +19,7 @@
 
 ---
 
-## Milestone 3A.3 Completed Highlights (Active Branch: `milestone/3a3-functional-hardening`)
+## Milestone 3A.3 Implemented Highlights (Active Branch: `milestone/3a3-functional-hardening`)
 - **Single Financial Source of Truth**: Enforced CDK/redb (`CashuWalletService.getBalance()`) and Cashu mint proof state as the sole financial source of truth. Eliminated synthetic fallback balance calculations and demo transaction fixtures.
 - **State Separation & Reconciliation**: Explicitly separated Financial State (`Spendable`, `Locked Escrow`, `Claimed`, `Refunded`), Delivery State (`Delivered`, `Delivery Pending`), and Coordination State (`Synced`, `Sync Pending`).
 - **Client Authority Resilience**: When CDK operations succeed but backend synchronization fails, client remains financially correct with `coordinationSyncPending`. Delivery drops preserve escrow and enable deduplicated retry.
