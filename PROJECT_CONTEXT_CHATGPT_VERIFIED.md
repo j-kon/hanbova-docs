@@ -2,7 +2,7 @@
 
 > **Tagline**: *Send protected.*  
 > **Mission**: Safer everyday Bitcoin payments across Africa by combining instant payments with optional Cashu-based protected payments.  
-> **Current Development Stage**: **Milestone 3A.4 Real Device Runtime & Test Distribution Readiness COMPLETE (Awaiting Review)**  
+> **Current Development Stage**: **Milestone 3A.4 Real Device Runtime & Test Distribution Readiness (PARTIALLY DEVICE VERIFIED / FINAL TWO-APP QA PENDING)**  
 > **Active Branch**: `milestone/3a4-device-runtime`  
 > **Primary Program Goal**: Afro Bitcoin Fellowship  
 > **Mainnet Status**: **SAFETY-LOCKED / MUST REMAIN DISABLED FOR TESTING**  

@@ -12,7 +12,7 @@
 | **Milestone 3A.2** | Real CDK Client Wallet Integration via Thin Rust C-FFI Bridge & Zero-Custody Backend Hardening | `COMPLETED` ✅ |
 | **Milestone 3A.2.1** | Mobile Integration & Safety Stabilization (Android NDK / iOS FFI, Mainnet Lock, Authorization 403) | `COMPLETED` ✅ |
 | **Milestone 3A.3** | Functional Hardening & Daily-Use Reliability (Single Financial Source of Truth, State Reconciliation, Double-Tap Guards, Honest Recovery) | `COMPLETED` ✅ |
-| **Milestone 3A.4** | Real Device Runtime & Test Distribution Readiness (Android/iOS UI QA, Real Process Persistence, Release Artifacts, Closed Testing Distribution) | `COMPLETED` ✅ (Awaiting Review) |
+| **Milestone 3A.4** | Real Device Runtime & Test Distribution Readiness (Android/iOS UI QA, Real Process Persistence, Release Artifacts, Closed Testing Distribution) | `PARTIALLY DEVICE VERIFIED / FINAL TWO-APP QA PENDING` ⏳ |
 | **Milestone 3B.1** | Real User Onboarding + Controlled Mainnet Demo Pilot (NUT-04 Auto-Polling, Step-by-Step Onboarding, Pilot Limits) | `COMPLETED` ✅ (on `milestone/3b1-real-onboarding-mainnet-pilot`) |
 | **Milestone 3B** | Lightning Integration & Ecash Swaps (NUT-04/NUT-05) | `Development / experimental` 🚧 |
 | **Milestone 4** | Production Hardening, BIP-39 Backup, Biometrics & Multi-Mint | `Partial` ⚠️ |
@@ -20,15 +20,11 @@
 
 ---
 
-## Milestone 3A.4 Completed Highlights
-- **Real Mobile Device Runtime QA**: Executed complete onboarding, funding, protected send, claim, refund, and cold-restart workflows across Android emulator (`sdk gphone64 arm64`) and iOS simulator (`iPhone 17`).
-- **Real UI Funding (NUT-04)**: Alice funded with 5,000 test sats via genuine NUT-04 Lightning invoice on local Nutshell mint. Home spendable balance updated immediately.
-- **Scenario A (Protected Claim)**: Alice sent 100 sats Protected to Bob &rarr; Bob received via encrypted X25519 relay, decrypted payload, and claimed with CDK P2PK signature on Nutshell mint.
-- **Scenario B (Sender Refund)**: Alice sent 100 sats with 2s locktime &rarr; refunded 100 sats back to spendable wallet after locktime &rarr; Bob late claim rejected by mint.
-- **Scenario C (Process Kill & Restart Persistence)**: Force killed app on Android and iOS; relaunched cold from launcher; verified session, Redb database spendable balance (5,000 sats), and encrypted inbox persistence.
-- **Release Build Readiness**: Verified Android debug APK (`app-debug.apk`), Android release App Bundle (`app-release.aab` - 97.2MB), and iOS Simulator build (`Runner.app`).
+## Milestone 3A.4 In-Progress Highlights
+- **Real Mobile Device Runtime QA**: Android clean onboarding, NUT-04 funding UI, balance updates, app relaunch/persistence, and Protected Send UI verified live on `sdk gphone64 arm64`. iOS application launch and Brand V4 Dark Mode verified on iPhone 17.
+- **Release Build Verification**: Verified Android debug APK (`app-debug.apk`), Android release App Bundle (`app-release.aab` - 97.2MB), and iOS Simulator build (`Runner.app`).
 - **Mainnet Safety Lock**: Mainnet strictly disabled (`isEnabled: false`, `maxWalletBalanceSats: 0`).
-- **Verification Evidence**: Documented in `hanbova-docs/verification/M3A4_DEVICE_RUNTIME_EVIDENCE.md`.
+- **Verification Evidence**: Maintained in `hanbova-docs/verification/M3A4_DEVICE_RUNTIME_EVIDENCE.md`. Two-app real UI claim, refund, and cold-restart flows pending final device execution.
 
 ---
 
