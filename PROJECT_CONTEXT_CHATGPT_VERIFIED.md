@@ -2,12 +2,12 @@
 
 > **Tagline**: *Send protected.*  
 > **Mission**: Safer everyday Bitcoin payments across Africa by combining instant payments with optional Cashu-based protected payments.  
-> **Current Development Stage**: **Milestone 3A.2.1 Mobile Stabilization & Pre-Demo Readiness**  
+> **Current Development Stage**: **Milestone 3A.3 Functional Hardening & Daily-Use Reliability COMPLETE**  
 > **Active Branch**: `main`  
 > **Primary Program Goal**: Afro Bitcoin Fellowship  
 > **Mainnet Status**: **SAFETY-LOCKED / MUST REMAIN DISABLED FOR TESTING**  
-> **Branding System**: Approved Hanbova V3 Identity (Exact Master Logo/Icon, Poppins 400-700, Brand Tokens)  
-> **Last Reviewed**: 2026-08-29
+> **Branding System**: Approved Hanbova Brand V4 Identity (Bitcoin Orange `#F7931A`, Lightning Gold `#FFC400`, Charcoal `#172027`, Graphite `#25323A`, Warm White `#FAFAF7`, Soft Gray `#6E7A80`, Exact Master V4 Logos/Icons/Splash/Onboarding)  
+> **Last Reviewed**: 2026-08-31
 
 ---
 
@@ -762,11 +762,11 @@ Use the following development status until further verification:
 | --- | --- |
 | Milestone 1: Foundation | Completed ✅ |
 | Milestone 2: Protected Payment Protocol | Completed at protocol/reference-test level ✅ |
-| Milestone 2.5: Consumer Wallet UX & Brand V3 | Completed ✅ |
+| Milestone 2.5: Consumer Wallet UX & Brand V4 | Completed ✅ |
 | Milestone 3A: Two-device Cashu Test Wallet | Completed ✅ |
 | Milestone 3A.1: Client Wallet Authority & Key Correction | Completed ✅ |
 | Milestone 3A.2: Real CDK Integration | Completed ✅ |
-| Milestone 3A.2.1: Mobile Integration & Safety Stabilization | **Completed ✅** |
+| **Milestone 3A.3: Functional Hardening & Daily-Use Reliability** | **Completed ✅** |
 | Milestone 3B: Production Lightning Wallet | Development / experimental 🚧 |
 | Milestone 4: Recovery/Hardening | Partial (Deterministic P2PK/Transport restored; full NUT-13 proof restoration in progress) ⚠️ |
 | Milestone 5: Mainnet Beta | Mainnet disabled / safety-locked 🔒 |
@@ -790,11 +790,33 @@ Completed items:
 - **Presentation Copy Standards**: Corrected claim success screens and toasts to accurately communicate ecash balance updates rather than implying direct on-chain Bitcoin or Lightning settlement.
 - **Error Presentation Cleanup**: Stripped runtime Dart wrapper prefixes (`Bad state:`, `Exception:`) from user-facing error banners.
 - **Logging & Secrets Audit**: Confirmed zero private keys, seed phrases, bearer tokens, or database secrets are logged.
-- **All Automated Tests Passing**: **24/24 Rust tests**, **131/131 Flutter tests**.
+- **All Automated Tests Passing**: **24/24 Rust tests**, **136/136 Flutter tests** (including Brand V4 visual and token verification tests).
 
 ---
 
-## 23. Fellowship-Safe Project Description
+## 23. Milestone 3A.3 Completed Highlights
+
+### Functional Hardening & Daily-Use Reliability (Active Branch: `main`)
+
+Completed items:
+
+- **Single Financial Source of Truth**: Enforced native CDK redb embedded storage (`CashuWalletService.getBalance()`) and Cashu mint proof state as the sole financial source of truth. Purged synthetic balance fallbacks and demo seeders (`seedDemoTransactions()`).
+- **Three-Tier State Architecture & Reconciliation**: Explicitly separated Financial State (`Spendable`, `Locked Escrow`, `Claimed`, `Refunded`), Delivery State (`Delivered`, `Delivery Pending`), and Coordination State (`Synchronized`, `Coordination Sync Pending`). Local settled states (`completed`, `refunded`) are preserved against stale backend coordination status.
+- **Canonical Transaction Deduplication**: Idempotent upsert by canonical payment ID in `TransactionsNotifier`, preventing duplicate records on relay or state changes.
+- **Delivery Retry Key-Rotation Safety**: Delivery retry strictly maintains original payment keys and envelopes without creating new tokens or rotating recipient keys.
+- **Client Authority Resilience**: When CDK operations succeed but backend synchronization fails, transactions transition to `coordinationSyncPending`. Delivery drops preserve escrow and enable deduplicated retry without creating redundant ecash.
+- **Double-Tap & Concurrency Safety**: All financial trigger actions (Protected Send, Add Bitcoin quote minting, Claim, Refund, Instant Send) feature loading state flags and disabled handlers during execution.
+- **Consumer Error Translation**: Built `ConsumerErrorTranslator` to strip internal runtime wrapper prefixes and map errors to clear consumer-friendly messages (*"Mint unreachable"*, *"Payment already claimed or refunded"*, *"Recipient wallet identity changed"*, *"Insufficient spendable balance"*), while automatically redacting hex secrets $\ge 32$ characters and local filesystem URIs.
+- **Truthful Recovery Scope**: Updated `RestoreSeedScreen` to truthfully inform users that mnemonic restoration recovers signing keys and account identity, whereas off-device ecash proof recovery requires local database backup until server-assisted proof restoration (NUT-13) is supported.
+- **Genuine Local Nutshell 0.16.5 Integration**: Verified NUT-11 claim, locktime refund, wrong-key rejection, early-refund rejection, and late-claim rejection against running Nutshell mint.
+- **Live Encrypted Message Relay & Redb Persistence**: Verified Alice &rarr; Bob ChaCha20-Poly1305 encrypted envelope relay, inbox retrieval, Bob decryption, and claim execution across wallet service reconstruction.
+- **Hermetic CI Isolation**: Live integration test isolated under `HANBOVA_RUN_LIVE_INTEGRATION=true`, keeping normal CI 100% hermetic.
+- **Quality Gates**: **Standard Flutter: 150 passed / 0 failed / 1 skipped**, **Live Local Flutter: 1 passed / 0 failed**, **Standard Rust: 22 passed / 0 failed / 2 ignored**, **Local-Mint Rust: 2 passed / 0 failed**, **Flutter Analyzer: 0 issues**, **Rust Clippy: 0 warnings**, **GitHub App CI: GREEN**, **GitHub Backend CI: GREEN**.
+- **Scope Clarification**: *Interactive Android/iOS two-app device verification remains a manual QA gate (`NOT VERIFIED` on physical/emulator hardware) and is tracked separately from M3A.3 engineering completion.*
+
+---
+
+## 24. Fellowship-Safe Project Description
 
 Use this wording when describing Hanbova today:
 
@@ -812,7 +834,7 @@ Avoid saying:
 
 ---
 
-## 24. Fellowship Demo Goal
+## 25. Fellowship Demo Goal
 
 The strongest demo is not a long feature tour.
 
@@ -856,7 +878,7 @@ This should be shown using genuine valueless Cashu proofs, not local simulation.
 
 ---
 
-## 25. Final Engineering Principle
+## 26. Final Engineering Principle
 
 Every Hanbova feature should answer three questions:
 

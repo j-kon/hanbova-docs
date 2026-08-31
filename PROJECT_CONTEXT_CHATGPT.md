@@ -2,11 +2,11 @@
 
 > **Tagline**: *Send protected.*  
 > **Mission**: Safer everyday Bitcoin payments across Africa. Send instantly or protect money with conditional claim windows.  
-> **Current Version**: `v0.5.0-beta` (Milestone 3A.2.1 Mobile Stabilization)  
-> **Active Branch**: `milestone/3a2-1-mobile-stabilization`  
+> **Current Version**: `v0.5.1-beta` (Milestone 3A.3 Functional Hardening & Daily-Use Reliability)  
+> **Active Branch**: `milestone/3a3-functional-hardening`  
 > **Target Audience / Program**: Afro Bitcoin Fellowship & Mobile Integration  
 > **Mainnet Status**: **SAFETY-LOCKED / DISABLED FOR TESTING**  
-> **Approved Branding**: Hanbova V3 Identity (Exact Master Logo/Icon, Poppins 400-700, Brand Tokens)  
+> **Approved Branding**: Hanbova Brand V4 Identity (Exact Master Approved Logo/Icon, Brand Tokens, Warm Dark System)  
 
 ---
 
