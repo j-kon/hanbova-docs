@@ -57,3 +57,15 @@ Every item and scenario is classified as exactly one of: `AUTOMATED VERIFIED`, `
   - **Local Device**: Persisted in encrypted SQLite & local redb embedded database.
   - **Fresh Device Restore**: Requires local database transfer or future server-assisted proof restoration (NUT-13).
   - User copy in `RestoreSeedScreen` truthfully states: *"Your signing keys and account identity have been restored. Ecash proofs stored locally on another device require local database transfer until server-assisted proof restoration (NUT-13) is supported."*
+
+---
+
+## 4. Automated Test Suite Execution Summary
+
+- **Flutter Test Suite**: **150 passed / 0 failed** (100% passing across 108 test suites)
+- **Rust Standard Test Suite**: **22 passed / 0 failed / 2 ignored** (`test_scenario_a_bob_claims_with_p2pk` & `test_scenario_b_alice_refunds_after_locktime` ignored due to local mint requirement)
+- **Flutter Analyzer**: **0 issues found**
+- **Rust Clippy**: **0 warnings** (`-D warnings` enforced)
+- **Backend API Integration**: Registration, Authentication, Key Publication, Profile Lookup, Payment Intents, and Protected Message Relay verified live on running server.
+- **Mainnet Protection**: `NetworkConfig.mainnet.isEnabled = false` (Compile-time and runtime safety locked).
+
