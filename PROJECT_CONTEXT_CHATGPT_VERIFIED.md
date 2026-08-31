@@ -2,8 +2,8 @@
 
 > **Tagline**: *Send protected.*  
 > **Mission**: Safer everyday Bitcoin payments across Africa by combining instant payments with optional Cashu-based protected payments.  
-> **Current Development Stage**: **Milestone 3A.3 Functional Hardening & Daily-Use Reliability COMPLETE**  
-> **Active Branch**: `main`  
+> **Current Development Stage**: **Milestone 3A.4 Real Device Runtime & Test Distribution Readiness COMPLETE (Awaiting Review)**  
+> **Active Branch**: `milestone/3a4-device-runtime`  
 > **Primary Program Goal**: Afro Bitcoin Fellowship  
 > **Mainnet Status**: **SAFETY-LOCKED / MUST REMAIN DISABLED FOR TESTING**  
 > **Branding System**: Approved Hanbova Brand V4 Identity (Bitcoin Orange `#F7931A`, Lightning Gold `#FFC400`, Charcoal `#172027`, Graphite `#25323A`, Warm White `#FAFAF7`, Soft Gray `#6E7A80`, Exact Master V4 Logos/Icons/Splash/Onboarding)  
