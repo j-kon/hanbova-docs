@@ -11,6 +11,7 @@
 | **Milestone 3A.1** | Security Correction: Move Cashu Wallet Authority to Client & Genuine Secp256k1 | `COMPLETED` ✅ |
 | **Milestone 3A.2** | Real CDK Client Wallet Integration via Thin Rust C-FFI Bridge & Zero-Custody Backend Hardening | `COMPLETED` ✅ |
 | **Milestone 3A.2.1** | Mobile Integration & Safety Stabilization (Android NDK / iOS FFI, Mainnet Lock, Authorization 403) | `COMPLETED` ✅ |
+| **Milestone 3A.3** | Functional Hardening & Daily-Use Reliability (Single Financial Source of Truth, State Reconciliation, Double-Tap Guards, Honest Recovery) | `COMPLETED` ✅ |
 | **Milestone 3B.1** | Real User Onboarding + Controlled Mainnet Demo Pilot (NUT-04 Auto-Polling, Step-by-Step Onboarding, Pilot Limits) | `COMPLETED` ✅ (on `milestone/3b1-real-onboarding-mainnet-pilot`) |
 | **Milestone 3B** | Lightning Integration & Ecash Swaps (NUT-04/NUT-05) | `Development / experimental` 🚧 |
 | **Milestone 4** | Production Hardening, BIP-39 Backup, Biometrics & Multi-Mint | `Partial` ⚠️ |
@@ -18,7 +19,18 @@
 
 ---
 
-## Milestone 3A.2.1 Completed Highlights (Current Active Branch: `milestone/3a2-1-mobile-stabilization`)
+## Milestone 3A.3 Completed Highlights (Active Branch: `milestone/3a3-functional-hardening`)
+- **Single Financial Source of Truth**: Enforced CDK/redb (`CashuWalletService.getBalance()`) and Cashu mint proof state as the sole financial source of truth. Eliminated synthetic fallback balance calculations and demo transaction fixtures.
+- **State Separation & Reconciliation**: Explicitly separated Financial State (`Spendable`, `Locked Escrow`, `Claimed`, `Refunded`), Delivery State (`Delivered`, `Delivery Pending`), and Coordination State (`Synced`, `Sync Pending`).
+- **Client Authority Resilience**: When CDK operations succeed but backend synchronization fails, client remains financially correct with `coordinationSyncPending`. Delivery drops preserve escrow and enable deduplicated retry.
+- **Double-Tap & Concurrency Safety**: Wrapped all financial trigger buttons (Send Protected, Add Bitcoin, Claim, Refund, Instant Send) with loading states and disabled handlers during execution.
+- **Consumer Error Translator (`ConsumerErrorTranslator`)**: Replaced raw Dart and FFI exception traces with consumer-friendly messages (*"Mint unreachable"*, *"Payment already spent"*, *"Recipient wallet identity changed"*).
+- **Truthful Recovery Scope**: Explicitly separated identity restoration (recovering deterministic signing keys) from proof restoration, communicating exact recovery boundaries to the user.
+- **Automated Verification**: **24/24 Rust tests passing**, **146/146 Flutter tests passing**, **0 analyzer issues**, clean Android debug APK & iOS simulator builds.
+
+---
+
+## Milestone 3A.2.1 Completed Highlights
 - **Mainnet Safety Hardening**: Strict safety lock active (`NetworkConfig.mainnet.isEnabled = false`); runtime switching blocked; UI clearly displays test environment badge (`TEST MODE`).
 - **Backend Authorization & Spoofing Elimination**: Unconditionally overwritten `payload.sender_id = Some(auth_user.user_id)`; returns HTTP 403 Forbidden for unauthorized access; enforces strict role state transitions (`"claimed"` strictly recipient, `"refunded"` strictly sender).
 - **Mobile C-FFI Binary Packaging**: Compiled Android NDK native libraries (`arm64-v8a` and `x86_64`) into `android/app/src/main/jniLibs/`; compiled universal static framework (`HanbovaCdkFfi.xcframework`) linking physical ARM64 (`aarch64-apple-ios`) and universal simulator (`aarch64-apple-ios-sim` + `x86_64-apple-ios`).

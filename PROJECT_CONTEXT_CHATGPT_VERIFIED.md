@@ -6,8 +6,8 @@
 > **Active Branch**: `main`  
 > **Primary Program Goal**: Afro Bitcoin Fellowship  
 > **Mainnet Status**: **SAFETY-LOCKED / MUST REMAIN DISABLED FOR TESTING**  
-> **Branding System**: Approved Hanbova V3 Identity (Exact Master Logo/Icon, Poppins 400-700, Brand Tokens)  
-> **Last Reviewed**: 2026-08-29
+> **Branding System**: Approved Hanbova Brand V4 Identity (Bitcoin Orange `#F7931A`, Lightning Gold `#FFC400`, Charcoal `#172027`, Graphite `#25323A`, Warm White `#FAFAF7`, Soft Gray `#6E7A80`, Exact Master V4 Logos/Icons/Splash/Onboarding)  
+> **Last Reviewed**: 2026-08-31
 
 ---
 
@@ -762,7 +762,7 @@ Use the following development status until further verification:
 | --- | --- |
 | Milestone 1: Foundation | Completed ✅ |
 | Milestone 2: Protected Payment Protocol | Completed at protocol/reference-test level ✅ |
-| Milestone 2.5: Consumer Wallet UX & Brand V3 | Completed ✅ |
+| Milestone 2.5: Consumer Wallet UX & Brand V4 | Completed ✅ |
 | Milestone 3A: Two-device Cashu Test Wallet | Completed ✅ |
 | Milestone 3A.1: Client Wallet Authority & Key Correction | Completed ✅ |
 | Milestone 3A.2: Real CDK Integration | Completed ✅ |
@@ -790,7 +790,7 @@ Completed items:
 - **Presentation Copy Standards**: Corrected claim success screens and toasts to accurately communicate ecash balance updates rather than implying direct on-chain Bitcoin or Lightning settlement.
 - **Error Presentation Cleanup**: Stripped runtime Dart wrapper prefixes (`Bad state:`, `Exception:`) from user-facing error banners.
 - **Logging & Secrets Audit**: Confirmed zero private keys, seed phrases, bearer tokens, or database secrets are logged.
-- **All Automated Tests Passing**: **24/24 Rust tests**, **131/131 Flutter tests**.
+- **All Automated Tests Passing**: **24/24 Rust tests**, **136/136 Flutter tests** (including Brand V4 visual and token verification tests).
 
 ---
 
