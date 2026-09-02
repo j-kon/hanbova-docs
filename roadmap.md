@@ -13,8 +13,9 @@
 | **Milestone 3A.2.1** | Mobile Integration & Safety Stabilization (Android NDK / iOS FFI, Mainnet Lock, Authorization 403) | `COMPLETED` ✅ |
 | **Milestone 3A.3** | Functional Hardening & Daily-Use Reliability (Single Financial Source of Truth, State Reconciliation, Double-Tap Guards, Honest Recovery) | `COMPLETED` ✅ |
 | **Milestone 3A.4** | Real Device Runtime & Test Distribution Readiness (Android/iOS UI QA, Real Process Persistence, Release Artifacts, Closed Testing Distribution) | `COMPLETED` ✅ |
-| **Milestone 3B.1** | Real User Onboarding + Controlled Mainnet Demo Pilot (NUT-04 Auto-Polling, Step-by-Step Onboarding, Pilot Limits) | `COMPLETED` ✅ (on `milestone/3b1-real-onboarding-mainnet-pilot`) |
-| **Milestone 3B** | Lightning Integration & Ecash Swaps (NUT-04/NUT-05) | `Development / experimental` 🚧 |
+| **Milestone 3B.1** | Everyday Spend & Travel Roaming Foundation (Decoupled Country Model, Bitnob & DT One Adapters, Capability Normalization) | `COMPLETED` ✅ |
+| **Milestone 3B.2** | Consumer Product Experience & User Journeys (Onboarding, Travel Switching, Spend Hub, eSIM, Unified Activity, Jargon Audit) | `COMPLETED` ✅ (on `milestone/3b2-consumer-product-experience`) |
+| **Milestone 3B.3** | Lightning Swaps & Ecash Liquidity (NUT-04/NUT-05 Live Flow Hardening) | `Next Milestone` 🚧 |
 | **Milestone 4** | Production Hardening, BIP-39 Backup, Biometrics & Multi-Mint | `Partial` ⚠️ |
 | **Milestone 5** | Public Mainnet Beta, On-Chain Swaps & App Store Publishing Readiness | `Mainnet disabled / future` 🔒 |
 
