@@ -12,10 +12,22 @@
 | **Milestone 3A.2** | Real CDK Client Wallet Integration via Thin Rust C-FFI Bridge & Zero-Custody Backend Hardening | `COMPLETED` ✅ |
 | **Milestone 3A.2.1** | Mobile Integration & Safety Stabilization (Android NDK / iOS FFI, Mainnet Lock, Authorization 403) | `COMPLETED` ✅ |
 | **Milestone 3A.3** | Functional Hardening & Daily-Use Reliability (Single Financial Source of Truth, State Reconciliation, Double-Tap Guards, Honest Recovery) | `COMPLETED` ✅ |
+| **Milestone 3A.4** | Real Device Runtime & Test Distribution Readiness (Android/iOS UI QA, Real Process Persistence, Release Artifacts, Closed Testing Distribution) | `COMPLETED` ✅ |
 | **Milestone 3B.1** | Real User Onboarding + Controlled Mainnet Demo Pilot (NUT-04 Auto-Polling, Step-by-Step Onboarding, Pilot Limits) | `COMPLETED` ✅ (on `milestone/3b1-real-onboarding-mainnet-pilot`) |
 | **Milestone 3B** | Lightning Integration & Ecash Swaps (NUT-04/NUT-05) | `Development / experimental` 🚧 |
 | **Milestone 4** | Production Hardening, BIP-39 Backup, Biometrics & Multi-Mint | `Partial` ⚠️ |
 | **Milestone 5** | Public Mainnet Beta, On-Chain Swaps & App Store Publishing Readiness | `Mainnet disabled / future` 🔒 |
+
+---
+
+## Milestone 3A.4 Completed Highlights
+- **Real Mobile Device Runtime QA**: 
+  - **Scenario A (Device Claim)**: `DEVICE RUNTIME VERIFIED` — Alice Android UI sent 100 sats; Bob claimed via iOS Simulator UI; CDK settled NUT-11 witness proofs; canonical single activity entry verified.
+  - **Scenario B (Sender Refund & Late Claim)**: `DEVICE RUNTIME VERIFIED` — Alice refunded expired payment via Android UI; Redb spendable balance restored; Bob late claim rejected cleanly with consumer-safe banner.
+  - **Scenario C (Process Kill & Cold Restart Persistence)**: `DEVICE RUNTIME VERIFIED` — Pending payment created; both apps force-stopped at OS level; cold relaunched; Alice pending state and Bob decrypted incoming envelope persisted; Bob claimed via iOS UI.
+- **Release Build Verification**: Verified Android debug APK (`app-debug.apk`), Android release App Bundle (`app-release.aab` - 97.2MB), and iOS Simulator build (`Runner.app`).
+- **Mainnet Safety Lock**: Mainnet strictly disabled (`isEnabled: false`, `maxWalletBalanceSats: 0`).
+- **Verification Evidence**: Complete evidence matrix and sanitized screenshots documented in `hanbova-docs/verification/M3A4_DEVICE_RUNTIME_EVIDENCE.md`.
 
 ---
 
@@ -36,7 +48,6 @@
   - **Rust Clippy & Formatter**: **0 warnings / clean formatting**
   - **GitHub App CI**: **GREEN**
   - **GitHub Backend CI**: **GREEN**
-  - **Manual Device QA Gate Note**: *Interactive Android/iOS two-app device verification remains a manual QA gate and is tracked separately from M3A.3 engineering completion.*
 
 ---
 
