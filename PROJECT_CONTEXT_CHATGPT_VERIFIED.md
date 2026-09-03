@@ -2,12 +2,12 @@
 
 > **Tagline**: *Send protected.*  
 > **Mission**: Safer everyday Bitcoin payments across Africa by combining instant payments with optional Cashu-based protected payments.  
-> **Current Development Stage**: **Milestone 3A.4 Real Device Runtime & Test Distribution Readiness (PARTIALLY DEVICE VERIFIED / FINAL TWO-APP QA PENDING)**  
-> **Active Branch**: `milestone/3a4-device-runtime`  
+> **Current Development Stage**: **Milestone M3B.2.1 Financial Dashboard & Product Experience Completion (COMPLETED & VERIFIED)**  
+> **Active Branch**: `milestone/3b2-1-financial-experience`  
 > **Primary Program Goal**: Afro Bitcoin Fellowship  
 > **Mainnet Status**: **SAFETY-LOCKED / MUST REMAIN DISABLED FOR TESTING**  
 > **Branding System**: Approved Hanbova Brand V4 Identity (Bitcoin Orange `#F7931A`, Lightning Gold `#FFC400`, Charcoal `#172027`, Graphite `#25323A`, Warm White `#FAFAF7`, Soft Gray `#6E7A80`, Exact Master V4 Logos/Icons/Splash/Onboarding)  
-> **Last Reviewed**: 2026-08-31
+> **Last Reviewed**: 2026-09-03
 
 ---
 
@@ -816,7 +816,31 @@ Completed items:
 
 ---
 
-## 24. Fellowship-Safe Project Description
+## 24. Milestone M3B.2.1 Completed Highlights: Financial Dashboard & Product Experience Completion
+
+### Consumer Financial Management & Demo Experience (Branch: `milestone/3b2-1-financial-experience`)
+
+Completed items:
+
+- **Dedicated Money & Balances Hub**: Implemented `MoneyScreen` featuring Total Wallet Balance, Available Balance, Protected Balance (with waiting vs refundable breakdown), and Pending Balance in genuine Bitcoin satoshis with multi-currency reference conversion.
+- **8-Currency Multi-Currency Presentation**: Full deterministic support for `NGN`, `USD`, `KES`, `GHS`, `RWF`, `UGX`, `TZS`, and `ZAR`. Changing display currency preserves underlying sats.
+- **Financial Insights & Period Analytics**: Implemented `InsightsScreen` supporting period filters (*This week*, *This month*, *Last month*, *3 months*, *This year*, *Custom*), Money In, Money Out, Net Flow, Fees, category spending, country spending (Kenya 🇰🇪, Nigeria 🇳🇬, Ghana 🇬🇭), and currency usage summaries.
+- **Pending & Attention Hub**: Unified in-flight payments, uncertain bill payment warnings (*"Checking payment status. Please don't pay again yet."*), 1-tap claim for expired protected refunds, low eSIM data alerts, and backup reminders in `PendingCentreScreen`.
+- **Notifications Centre**: Deterministic notification feed across Transactions, Protected escrow, Bills, eSIM, Travel, and Security with read state management and amount privacy masking in `NotificationsScreen`.
+- **Account Statements & Export**: Monthly statements with opening balance, in, out, fees, closing balance, transaction count, CSV export, and PDF download modals in `StatementsScreen`.
+- **People & Beneficiaries**: Contact management for Lightning addresses, Mobile Money numbers, and Bank accounts with instant send actions in `BeneficiariesScreen`.
+- **Payment Requests & QR Sharing**: Sats/fiat switchable amount requests, notes, QR code invoice generation, copy link, and share invoice actions in `RequestMoneyScreen`.
+- **Saved Billers Management**: Utility meters and phone lines management with reference editing and 1-tap Pay Again actions in `SavedPaymentsScreen`.
+- **Virtual Cards (Sandbox)**: Complete mock card lifecycle featuring masked PAN, tap-to-reveal CVV/Expiry, sats funding modal, freeze switch, and card transactions in `CardsScreen`.
+- **Normalized Receipts & Help Sheet**: Unified receipt bottom sheet across all transaction types with prepaid electricity token copy and categorized "Need Help?" issue tickets in `TransactionReceiptSheet`.
+- **Privacy & Security Settings**: Mask balances in app, hide snapshot in multitasking app switcher, hide notification amounts, and biometric re-authentication for sensitive actions in `privacyProvider` and `ProfileScreen`.
+- **Country & Spend Market Separation**: Registration sets Residence only; Spend Market toggled only in Travel Hub without mutating user residence.
+- **Deterministic Demo Mode**: `demoModeProvider` showcases realistic African multi-market balances, statements, notifications, and cards without contaminating real Cashu wallet authority.
+- **Quality Gates**: **182/182 Flutter tests passed**, **0 Analyzer issues**, **Android Debug APK verified**, **iOS Simulator app verified**, **29/29 Rust tests passed**. Detailed report in `hanbova-docs/verification/M3B2_1_FINANCIAL_EXPERIENCE.md`.
+
+---
+
+## 25. Fellowship-Safe Project Description
 
 Use this wording when describing Hanbova today:
 
