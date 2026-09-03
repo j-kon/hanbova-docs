@@ -859,7 +859,20 @@ Completed items:
   - `PaymentUncertainSheet`: Reassuring pending status notice explaining downstream provider verification without panicking the user, with direct routing to Pending Centre.
   - `PaymentFailedSheet`: Clear failure categorization, actionable remediation, and retry options.
 - **Deterministic Demo Mode Persona**: Configured Nigeria Residence, Nigeria Spend Market (`NG`), calibrated balances (2,450,000 sats total, 1,800,000 spendable, 300,000 protected waiting, 150,000 protected refundable, 200,000 pending), and memory isolation.
-- **Quality Gates**: **197/197 Flutter tests passed**, **0 Analyzer issues**, **Android Debug APK verified**, **iOS Simulator app verified**. Detailed report in `hanbova-docs/verification/M3B2_2_FINANCIAL_INTERACTION_REDESIGN.md`.
+- **Quality Gates**: **213/213 Flutter tests passed**, **0 Analyzer issues**, **iOS Simulator app verified**. Detailed reports in `hanbova-docs/verification/M3B2_2_FINANCIAL_INTERACTION_REDESIGN.md` and `hanbova-docs/verification/M3B2_2_GLOBAL_REGISTRATION_MARKET_ADAPTIVE.md`.
+
+### Global Registration & Market-Adaptive Architecture Correction
+- **Global Any-Country Registration**: Complete 247 ISO 3166-1 alpha-2 dataset in `CountryInfo.allCountries` with name and ISO code search.
+- **Consumer Terminology**: Standardized on "Country of residence".
+- **Stepped Onboarding Flow**: Welcome → Names + Username → Email + Password → Country of Residence → Country Confirmation → Wallet Setup → Security → Recovery → Home.
+- **Decoupled User Context**: Immutable `residenceCountry` separated from mutable `activeMarket`, `displayCurrency`, and `roamEnabled`.
+- **Market Capabilities Matrix**: Strict distinction between global baseline (Bitcoin, Cashu, Send/Receive, Protected, Scan/Request) and local markets (billers, domestic bank payouts, mobile money).
+- **Capability-Adaptive UI**:
+  - Home action rail automatically adapts; Quick Pay is hidden when no everyday bills exist.
+  - Pay Hub displays "Activate Roam to use supported local services" banner for global markets, and capability-filtered biller grids for supported markets.
+  - Roam screen catalog with destination capability preview before activation.
+  - Profile screen displays Residence, Active Market, and Roam status separately.
+- **Developer Options Personas**: Persona A (NG, Roam off), Persona B (US, Roam off), Persona C (US, Roam KE).
 
 ---
 
