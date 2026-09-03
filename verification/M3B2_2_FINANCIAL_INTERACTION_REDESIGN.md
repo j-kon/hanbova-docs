@@ -5,8 +5,8 @@ Milestone M3B.2.2 delivers a complete interaction architecture and financial-app
 
 ### Core Deliverables
 - **5-Tab Direct Navigation Shell (`AppShell` & `router.dart`)**:
-  - `Home` (0): Authoritative Bitcoin balance hero, Action Attention Hub, quick actions (Send, Receive, Pay, Scan).
-  - `Pay` (1): Everyday Pay & Spend Hub with Spend Market switcher, Pay Again recent carousels, Everyday bills & utilities grid (Airtime, Data, Electricity, TV, Internet, Water), and payment management.
+  - `Home` (0): Authoritative Bitcoin balance hero, Action Attention Hub, quick actions (Send, Receive, Protected, Scan), quick pay bill shortcuts.
+  - `Pay` (1): Everyday Pay & Spend Hub with Spend Market switcher, Pay Again recent carousels, Everyday bills & utilities grid (Airtime, Data Bundles, Electricity, TV Cables, Internet, Water Bills), and payment management shortcuts.
   - `Activity` (2): Unified transaction history, filters (Money In, Money Out, Protected, Bills, Travel, Cards), search, and exports.
   - `Travel` (3): Travel Hub, destination selector, local spend switcher, eSIM management, roaming packages.
   - `Me` (4): Profile, recovery phrase backup, appearance, currency settings, security, and sign out.
@@ -34,17 +34,17 @@ Milestone M3B.2.2 delivers a complete interaction architecture and financial-app
 ### 2.1 Static Code Quality & Formatting
 ```bash
 $ dart format --output=none --set-exit-if-changed .
-Formatted 146 files (0 changed) in 0.49 seconds.
+Formatted 148 files (0 changed) in 1.57 seconds.
 
 $ flutter analyze
 Analyzing hanbova-app...
-No issues found! (ran in 3.8s)
+No issues found! (ran in 6.8s)
 ```
 
 ### 2.2 Automated Test Suite
 ```bash
 $ flutter test --exclude-tags=live-network
-00:13 +197 ~1: All tests passed!
+00:17 +197 ~1: All tests passed!
 ```
 The suite includes dedicated tests in `test/financial_interaction_redesign_test.dart` and `test/widget_test.dart` covering:
 1. 5-Tab Shell Navigation persistence and switching.
@@ -58,6 +58,19 @@ The suite includes dedicated tests in `test/financial_interaction_redesign_test.
 9. Standardized `PaymentSuccessSheet` token copy and receipt view.
 10. Standardized `PaymentUncertainSheet` reassurance.
 11. Demo Mode persona and memory isolation.
+
+### 2.3 Platform Builds
+```bash
+$ flutter build apk --debug
+Running Gradle task 'assembleDebug'...                             28.1s
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+
+$ flutter build ios --simulator
+Building org.hanbova.hanbova for simulator (ios)...
+Running Xcode build...                                          
+Xcode build done.                                           48.8s
+✓ Built build/ios/iphonesimulator/Runner.app
+```
 
 ---
 
