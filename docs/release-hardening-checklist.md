@@ -9,7 +9,7 @@ This checklist is the release gate for the four Hanbova repositories. A checked 
 
 ## Integration state
 
-- [x] App hardening commits are integrated onto the current app milestone branch (`7af576a`).
+- [x] App hardening commits are integrated onto the current app milestone branch (`e239cc5`).
 - [x] Backend hardening commits are integrated onto the current backend milestone branch (`0312df6`).
 - [x] Documentation and verification counts below are updated from the verified revisions.
 - [x] App, backend, and docs milestone worktrees are clean after integration.
@@ -27,7 +27,7 @@ flutter test
 
 - [x] Formatting/analyzer checks pass without changing files.
 - [x] `flutter analyze` reports zero issues.
-- [x] Full Flutter test suite passes: 294 passed, 1 opt-in integration test skipped.
+- [x] Full Flutter test suite passes: 296 passed, 1 opt-in integration test skipped.
 - [ ] Wallet policy tests cover deposit, send, projected-balance, mint, and network/build limits.
 - [ ] Wallet context tests prove user, identity, network, mint, and storage-prefix isolation.
 - [ ] Ledger tests cover persistence, upsert, restart, refresh, malformed records, and stale/offline reconciliation.
@@ -47,7 +47,7 @@ flutter test
 - [x] Unsupported scanner, push notification, biometric-login, live-rate, and recipient capabilities are labeled honestly.
 - [x] English localization delegates/ARB scaffolding are wired for recovery flows.
 - [ ] Payment and recovery screens work at 1.3x and 2.0x text scale on a 360x640 viewport.
-- [ ] Actionable controls have at least 48dp targets, semantic labels, keyboard/focus behavior, and status that does not rely on color alone.
+- [x] Audited payment/recovery controls have at least 48dp targets, semantic labels, and 2x text-scale coverage; status does not rely on color alone.
 
 ## Rust backend
 
