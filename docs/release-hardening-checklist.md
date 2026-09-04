@@ -9,7 +9,7 @@ This checklist is the release gate for the four Hanbova repositories. A checked 
 
 ## Integration state
 
-- [x] App hardening commits are integrated onto the current app milestone branch (`e239cc5`).
+- [x] App hardening commits are integrated onto the current app milestone branch (`fd021c7`).
 - [x] Backend hardening commits are integrated onto the current backend milestone branch (`0312df6`).
 - [x] Documentation and verification counts below are updated from the verified revisions.
 - [x] App, backend, and docs milestone worktrees are clean after integration.
@@ -25,7 +25,7 @@ flutter analyze
 flutter test
 ```
 
-- [x] Formatting/analyzer checks pass without changing files.
+- [x] Dart formatting and analyzer checks pass without changing files.
 - [x] `flutter analyze` reports zero issues.
 - [x] Full Flutter test suite passes: 296 passed, 1 opt-in integration test skipped.
 - [ ] Wallet policy tests cover deposit, send, projected-balance, mint, and network/build limits.
