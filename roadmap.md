@@ -25,7 +25,7 @@ Milestone 3B remains experimental and Milestone 4 remains partial. The current h
 
 - **App:** wallet policy, wallet-context isolation, durable activity/synchronization, recovery checks, receive/send confirmation, protected-send recovery, error sanitization, honest capability states, and the central accessible Pay action are integrated on the current app milestone branch.
 - **Backend:** typed fail-closed configuration, startup/provider checks, authenticated development-only Lightning routes, sanitized errors, CORS, rate limiting, and deployment safety are integrated on the current backend milestone branch.
-- **UI/platform:** the English localization foundation, native sensitive-screen protections, Android backup exclusions, account-scoped profile persistence, and payment/recovery accessibility audit are integrated. Reproducible iOS framework packaging remains the outstanding platform gate; track it in the [release-hardening checklist](docs/release-hardening-checklist.md).
+- **UI/platform:** the English localization foundation, native sensitive-screen protections, Android backup exclusions, account-scoped profile persistence, payment/recovery accessibility audit, and reproducible iOS framework packaging are integrated. Real production payment-provider adapters remain the release limitation; track it in the [release-hardening checklist](docs/release-hardening-checklist.md).
 - **Verification:** Flutter analyzer/tests and Rust fmt/clippy/tests are freshly recorded in the checklist; live mint/device verification remains opt-in and outstanding.
 
 ---

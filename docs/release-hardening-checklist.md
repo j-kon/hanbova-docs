@@ -91,7 +91,7 @@ cargo test --workspace
 
 - [x] Android backup/data-extraction rules exclude wallet and recovery material as appropriate.
 - [x] Android enables `FLAG_SECURE` while recovery material is visible and clears it afterward.
-- [x] iOS obscures recovery material while the app is inactive or screen capture/recording is active (native compile awaits the existing C-FFI framework artifact).
+- [x] iOS obscures recovery material while the app is inactive or screen capture/recording is active; `scripts/build_ios_ffi.sh` and `flutter build ios --simulator --no-codesign` pass.
 - [ ] Release builds use production signing configuration and contain no development network override.
 - [ ] Camera permissions are absent when camera scanning is not implemented.
 
