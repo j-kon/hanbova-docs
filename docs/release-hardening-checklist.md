@@ -10,7 +10,7 @@ This checklist is the release gate for the four Hanbova repositories. A checked 
 ## Integration state
 
 - [x] App hardening commits are integrated onto the current app milestone branch (`fd021c7`).
-- [x] Backend hardening commits are integrated onto the current backend milestone branch (`0312df6`).
+- [x] Backend hardening commits are integrated onto the current backend milestone branch (`e0dac55`).
 - [x] Documentation and verification counts below are updated from the verified revisions.
 - [x] App, backend, and docs milestone worktrees are clean after integration.
 
@@ -75,6 +75,7 @@ cargo test --workspace
 ### Explicit integration check
 
 - [ ] Run the CDK/mint integration runner only with its declared mint fixture and record the fixture revision, command, and result.
+- [x] Development `.env.example` and Compose variables are aligned; rendered Compose passes `scripts/validate-compose-config.sh` with test-only values.
 - [ ] Confirm test mint credentials and URLs are never used by production configuration.
 
 ## Deployment and secrets
