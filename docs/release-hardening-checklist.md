@@ -60,7 +60,7 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 ```
 
-- [x] Formatting, clippy, and workspace tests pass: 45 passed, 2 local-mint tests intentionally ignored.
+- [x] Formatting, clippy, and workspace tests pass; 2 local-mint tests are intentionally ignored.
 - [ ] Ordinary workspace tests do not require PostgreSQL, Docker, a local mint, or undeclared network services.
 - [ ] Configuration tests reject missing production database, insecure/default JWT secret, HTTP mint URLs, and mock providers.
 - [ ] Production startup fails before binding when database connection or migration fails.
