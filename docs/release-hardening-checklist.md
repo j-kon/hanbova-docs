@@ -9,7 +9,7 @@ This checklist is the release gate for the four Hanbova repositories. A checked 
 
 ## Integration state
 
-- [x] App hardening commits are integrated onto the current app milestone branch (`3b7eaac`).
+- [x] App hardening commits are integrated onto the current app milestone branch (`e96136e`).
 - [x] Backend hardening commits are integrated onto the current backend milestone branch (`0312df6`).
 - [x] Documentation and verification counts below are updated from the verified revisions.
 - [x] App, backend, and docs milestone worktrees are clean after integration.
@@ -43,7 +43,8 @@ flutter test
 - [ ] Recovery phrase reveal requires successful OS authentication and fails closed when authentication is unavailable or cancelled.
 - [ ] Restore requires an authenticated account and rebuilds the matching wallet context before routing to Home.
 - [ ] Activity remains visible after refresh/restart and exposes stale/offline status when reconciliation fails.
-- [ ] Unsupported scanner, push notification, biometric-login, live-rate, and recipient capabilities are labeled honestly.
+- [x] Unsupported scanner, push notification, biometric-login, live-rate, and recipient capabilities are labeled honestly.
+- [x] English localization delegates/ARB scaffolding are wired for recovery flows.
 - [ ] Payment and recovery screens work at 1.3x and 2.0x text scale on a 360x640 viewport.
 - [ ] Actionable controls have at least 48dp targets, semantic labels, keyboard/focus behavior, and status that does not rely on color alone.
 
@@ -87,9 +88,9 @@ cargo test --workspace
 
 ## Android and iOS platform security
 
-- [ ] Android backup/data-extraction rules exclude wallet and recovery material as appropriate.
-- [ ] Android enables `FLAG_SECURE` while recovery material is visible and clears it afterward.
-- [ ] iOS obscures recovery material while the app is inactive or screen capture/recording is active.
+- [x] Android backup/data-extraction rules exclude wallet and recovery material as appropriate.
+- [x] Android enables `FLAG_SECURE` while recovery material is visible and clears it afterward.
+- [x] iOS obscures recovery material while the app is inactive or screen capture/recording is active (native compile awaits the existing C-FFI framework artifact).
 - [ ] Release builds use production signing configuration and contain no development network override.
 - [ ] Camera permissions are absent when camera scanning is not implemented.
 
