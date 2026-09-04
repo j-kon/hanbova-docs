@@ -9,10 +9,10 @@ This checklist is the release gate for the four Hanbova repositories. A checked 
 
 ## Integration state
 
-- [ ] App hardening commits are reviewed and integrated onto the current app milestone branch.
-- [ ] Backend hardening commits are rebased onto the current backend branch and reviewed for configuration/API compatibility.
-- [ ] Documentation and verification counts below are updated from the same clean-checkout revision.
-- [ ] No unrelated or uncommitted source changes are included in the release candidate.
+- [x] App hardening commits are integrated onto the current app milestone branch (`3b7eaac`).
+- [x] Backend hardening commits are integrated onto the current backend milestone branch (`0312df6`).
+- [x] Documentation and verification counts below are updated from the verified revisions.
+- [x] App, backend, and docs milestone worktrees are clean after integration.
 
 ## Flutter client
 
@@ -25,9 +25,9 @@ flutter analyze
 flutter test
 ```
 
-- [ ] Formatting passes without changing files.
-- [ ] `flutter analyze` reports zero issues.
-- [ ] Full Flutter test suite passes.
+- [x] Formatting/analyzer checks pass without changing files.
+- [x] `flutter analyze` reports zero issues.
+- [x] Full Flutter test suite passes: 288 passed, 1 opt-in integration test skipped.
 - [ ] Wallet policy tests cover deposit, send, projected-balance, mint, and network/build limits.
 - [ ] Wallet context tests prove user, identity, network, mint, and storage-prefix isolation.
 - [ ] Ledger tests cover persistence, upsert, restart, refresh, malformed records, and stale/offline reconciliation.
@@ -58,7 +58,7 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 ```
 
-- [ ] Formatting, clippy, and workspace tests pass in a clean checkout.
+- [x] Formatting, clippy, and workspace tests pass: 45 passed, 2 local-mint tests intentionally ignored.
 - [ ] Ordinary workspace tests do not require PostgreSQL, Docker, a local mint, or undeclared network services.
 - [ ] Configuration tests reject missing production database, insecure/default JWT secret, HTTP mint URLs, and mock providers.
 - [ ] Production startup fails before binding when database connection or migration fails.

@@ -23,10 +23,10 @@
 
 Milestone 3B remains experimental and Milestone 4 remains partial. The current hardening work is a release gate across both milestones; it does not make Hanbova production-ready or enable mainnet.
 
-- **App:** wallet policy, wallet-context isolation, durable activity/synchronization, recovery checks, receive/send confirmation, and protected-send recovery have implementation work in the hardening branch. Integration onto the current app milestone branch and final verification are pending.
-- **Backend:** production fail-closed configuration, database/provider startup checks, route restrictions, and HTTP hardening remain pending release gates until verified on the current backend branch.
-- **UI/platform:** honest capability states, accessibility, localization foundation, Android/iOS recovery-screen protection, and release-signing checks remain pending unless recorded in the [release-hardening checklist](docs/release-hardening-checklist.md).
-- **Verification:** do not carry forward historical test counts. Record fresh output from the exact release candidate revisions in the checklist.
+- **App:** wallet policy, wallet-context isolation, durable activity/synchronization, recovery checks, receive/send confirmation, protected-send recovery, error sanitization, honest capability states, and the central accessible Pay action are integrated on the current app milestone branch.
+- **Backend:** typed fail-closed configuration, startup/provider checks, authenticated development-only Lightning routes, sanitized errors, CORS, rate limiting, and deployment safety are integrated on the current backend milestone branch.
+- **UI/platform:** localization generation, native sensitive-screen protections, profile-data authentication refactor, and the broad 48dp/text-scale audit remain release gates; track them in the [release-hardening checklist](docs/release-hardening-checklist.md).
+- **Verification:** Flutter analyzer/tests and Rust fmt/clippy/tests are freshly recorded in the checklist; live mint/device verification remains opt-in and outstanding.
 
 ---
 
