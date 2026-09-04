@@ -44,6 +44,8 @@ flutter run -d "iPhone 17" # or your Android emulator / device
 
 ## 3. Automated Test Verification
 
+The counts in this section are historical snapshots and are not release evidence. Run the commands in the [release-hardening checklist](docs/release-hardening-checklist.md) from clean, pinned revisions and record the resulting counts there. In particular, do not report a release as verified using an older count after wallet, backend, or UI hardening changes.
+
 | Repository | Test Command | Coverage |
 | :--- | :--- | :--- |
 | **`hanbova-backend`** | `cargo test --workspace` | **24/24 Passed** (Core invariants, Auth, CDK FFI, Protected Payments, Relay) |

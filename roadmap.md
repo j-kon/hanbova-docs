@@ -19,6 +19,15 @@
 | **Milestone 4** | Production Hardening, BIP-39 Backup, Biometrics & Multi-Mint | `Partial` ⚠️ |
 | **Milestone 5** | Public Mainnet Beta, On-Chain Swaps & App Store Publishing Readiness | `Mainnet disabled / future` 🔒 |
 
+## Release-hardening status (2026-09-04)
+
+Milestone 3B remains experimental and Milestone 4 remains partial. The current hardening work is a release gate across both milestones; it does not make Hanbova production-ready or enable mainnet.
+
+- **App:** wallet policy, wallet-context isolation, durable activity/synchronization, recovery checks, receive/send confirmation, and protected-send recovery have implementation work in the hardening branch. Integration onto the current app milestone branch and final verification are pending.
+- **Backend:** production fail-closed configuration, database/provider startup checks, route restrictions, and HTTP hardening remain pending release gates until verified on the current backend branch.
+- **UI/platform:** honest capability states, accessibility, localization foundation, Android/iOS recovery-screen protection, and release-signing checks remain pending unless recorded in the [release-hardening checklist](docs/release-hardening-checklist.md).
+- **Verification:** do not carry forward historical test counts. Record fresh output from the exact release candidate revisions in the checklist.
+
 ---
 
 ## Milestone 3A.4 Completed Highlights
@@ -52,7 +61,7 @@
 
 ---
 
-## Milestone 3A.2.1 Completed Highlights
+## Milestone 3A.2.1 Completed Highlights (historical baseline)
 - **Mainnet Safety Hardening**: Strict safety lock active (`NetworkConfig.mainnet.isEnabled = false`); runtime switching blocked; UI clearly displays test environment badge (`TEST MODE`).
 - **Backend Authorization & Spoofing Elimination**: Unconditionally overwritten `payload.sender_id = Some(auth_user.user_id)`; returns HTTP 403 Forbidden for unauthorized access; enforces strict role state transitions (`"claimed"` strictly recipient, `"refunded"` strictly sender).
 - **Mobile C-FFI Binary Packaging**: Compiled Android NDK native libraries (`arm64-v8a` and `x86_64`) into `android/app/src/main/jniLibs/`; compiled universal static framework (`HanbovaCdkFfi.xcframework`) linking physical ARM64 (`aarch64-apple-ios`) and universal simulator (`aarch64-apple-ios-sim` + `x86_64-apple-ios`).

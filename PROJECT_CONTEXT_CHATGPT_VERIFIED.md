@@ -1,5 +1,7 @@
 # Hanbova: Project Context & Verified Development State
 
+> **Release-hardening note (2026-09-04):** This file describes the verified product context, not release approval. The current release gate is [docs/release-hardening-checklist.md](docs/release-hardening-checklist.md). Historical test counts and branch names below must be refreshed from the exact release-candidate revisions before publication.
+
 > **Tagline**: *Send protected.*  
 > **Mission**: Safer everyday Bitcoin payments across Africa by combining instant payments with optional Cashu-based protected payments.  
 > **Current Development Stage**: **Milestone M3B.2.2 Financial Interaction Redesign (COMPLETED & VERIFIED)**  
@@ -7,7 +9,7 @@
 > **Primary Program Goal**: Afro Bitcoin Fellowship  
 > **Mainnet Status**: **SAFETY-LOCKED / MUST REMAIN DISABLED FOR TESTING**  
 > **Branding System**: Approved Hanbova Brand V4 Identity (Bitcoin Orange `#F7931A`, Lightning Gold `#FFC400`, Charcoal `#172027`, Graphite `#25323A`, Warm White `#FAFAF7`, Soft Gray `#6E7A80`, Exact Master V4 Logos/Icons/Splash/Onboarding)  
-> **Last Reviewed**: 2026-09-03
+> **Last Reviewed**: 2026-09-04
 
 ---
 
