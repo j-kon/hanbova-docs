@@ -874,6 +874,24 @@ Completed items:
   - Profile screen displays Residence, Active Market, and Roam status separately.
 - **Developer Options Personas**: Persona A (NG, Roam off), Persona B (US, Roam off), Persona C (US, Roam KE).
 
+### Multi-Asset Wallet, Stablecoin & Conversion UX Extension (Milestone M3B.2.2 Extension)
+- **Global Multi-Asset Product Model**: Formally integrated Bitcoin (BTC), Tether (USDT), and USD Coin (USDC) across the user interface.
+- **Financial Truthfulness in Normal Mode**: Real Cashu/Lightning for Bitcoin; stablecoins show truthful `$0.00` balances and `Coming Soon` / `Setup Required` status badges. Never fabricates fake stablecoin balances in normal mode.
+- **Decoupled Provider Architecture**: Decoupled presentation code from Bitnob and Flutterwave via abstract interfaces in `lib/core/providers/wallet_provider_abstractions.dart` (`StablecoinWalletProvider`, `AssetConversionProvider`, `StablecoinTransferProvider`, `FiatConversionProvider`). Documented in `hanbova-docs/MULTI_ASSET_PROVIDER_ARCHITECTURE.md`.
+- **Protected Send Invariant**: Protected Send remains strictly Bitcoin / Cashu-only (no Protected USDT or USDC).
+- **Dedicated Conversion Flow**: `ConversionFlowScreen` (`/convert`) with 6 bidirectional pairs, percentage chips, 30s countdown quote timer with live rate (`1 BTC ≈ $64,820 USDT`), and 5-stage lifecycle modal.
+- **Asset Detail Hubs**: `BitcoinDetailScreen` (`/money/bitcoin`) with Available, Protected Escrow, and Pending breakdowns; `StablecoinDetailScreen` (`/money/usdt`, `/money/usdc`) with multi-rail network metadata and status badges.
+- **Multi-Asset UI Integration**:
+  - `MoneyScreen`: Assets section showing Bitcoin, USDT, and USDC rows.
+  - `HomeScreen`: Action rail includes `Convert`; added responsive `Other: USDT $1,250 • USDC $750` card below Bitcoin card.
+  - `SendScreen` & `ReceiveScreen`: Multi-asset selector prompts (BTC, USDT, USDC), stablecoin forms, same-network warning banner, and deposit address generator.
+  - `UnifiedDepositSheet`: Stablecoin deposit prompt link.
+  - `PaymentConfirmationSheet`: Multi-asset "Pay with" selector with dynamic conversion breakdown and provider-neutral routing.
+  - `TransactionsScreen` & `TransactionReceiptSheet`: 10 new transaction types for stablecoin transfers and conversions, with filter chips.
+  - `InsightsScreen`: Multi-asset portfolio allocation progress bar and conversion activity card.
+- **Deterministic Demo Dataset**: Demo Mode features $1,250.00 USDT, $750.00 USDC, 1,800,000 sats BTC, and deterministic conversion/stablecoin transactions labeled `DEMO • SAMPLE DATA • NO REAL MONEY`.
+- **Quality Gates**: **254/254 Flutter tests passed** (`flutter test --exclude-tags=live-network`), **0 Analyzer issues**, **Android Debug APK verified**, **iOS Simulator app verified**. Detailed report in `hanbova-docs/verification/M3B2_2_MULTI_ASSET_WALLET_CONVERSION.md`.
+
 ---
 
 ## 26. Fellowship-Safe Project Description
