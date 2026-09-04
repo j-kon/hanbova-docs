@@ -9,7 +9,7 @@ This checklist is the release gate for the four Hanbova repositories. A checked 
 
 ## Integration state
 
-- [x] App hardening commits are integrated onto the current app milestone branch (`e96136e`).
+- [x] App hardening commits are integrated onto the current app milestone branch (`7af576a`).
 - [x] Backend hardening commits are integrated onto the current backend milestone branch (`0312df6`).
 - [x] Documentation and verification counts below are updated from the verified revisions.
 - [x] App, backend, and docs milestone worktrees are clean after integration.
@@ -27,7 +27,7 @@ flutter test
 
 - [x] Formatting/analyzer checks pass without changing files.
 - [x] `flutter analyze` reports zero issues.
-- [x] Full Flutter test suite passes: 288 passed, 1 opt-in integration test skipped.
+- [x] Full Flutter test suite passes: 294 passed, 1 opt-in integration test skipped.
 - [ ] Wallet policy tests cover deposit, send, projected-balance, mint, and network/build limits.
 - [ ] Wallet context tests prove user, identity, network, mint, and storage-prefix isolation.
 - [ ] Ledger tests cover persistence, upsert, restart, refresh, malformed records, and stale/offline reconciliation.
@@ -35,6 +35,7 @@ flutter test
 - [ ] Instant-send tests prove quote review, fee/total display, final confirmation, and amountful invoice handling.
 - [ ] Protected-send tests prove recipient review, policy revalidation, delivery-pending retry, and refund recovery.
 - [ ] Error tests prove that user messages are sanitized and that secrets, tokens, invoices, and JWTs never enter logs or UI errors.
+- [x] Profile persistence is scoped to the authenticated account and legacy global data cannot cross account boundaries.
 
 ### Manual client checks
 
