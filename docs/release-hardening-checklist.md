@@ -10,7 +10,7 @@ This checklist is the release gate for the four Hanbova repositories. A checked 
 ## Integration state
 
 - [x] App hardening commits are integrated onto the current app milestone branch (`fd021c7`).
-- [x] Backend hardening commits are integrated onto the current backend milestone branch (`e0dac55`).
+- [x] Backend hardening commits are integrated onto the current backend milestone branch (`8d825f0`).
 - [x] Documentation and verification counts below are updated from the verified revisions.
 - [x] App, backend, and docs milestone worktrees are clean after integration.
 
