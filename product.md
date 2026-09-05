@@ -29,8 +29,8 @@ Hanbova introduces a clear, two-track consumer mental model:
 * **Mechanism**: Escrowed / timelocked payment (using Cashu P2PK and timelock primitives).
 * **Settlement**: Conditional. Funds are locked safely until the recipient provides cryptographic claim proof.
 * **Safety Features**:
-  * **Claim Window**: The payment expires automatically if unclaimed after a defined duration (e.g. 24h, 3 days).
-  * **Self-Service Refund**: If the recipient never claims or delivery fails, the sender recovers 100% of the locked principal upon expiry.
+  * **Protection Window**: A chosen locktime (e.g. 24h or 3 days) determines when the sender's refund path becomes available. It does not automatically cancel the recipient's claim path or return funds.
+  * **Self-Service Refund**: After locktime, the sender can request a refund of unspent locked funds. The recipient may still claim until the mint accepts a spend; the first accepted claim or refund wins. Applicable mint fees may reduce the recovered amount.
   * **Proof of Commitment**: The recipient can independently verify that funds are locked before releasing goods.
 
 ---
